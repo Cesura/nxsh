@@ -63,7 +63,7 @@ For a full list of commands supported by your current version of nxsh, type "hel
 
 ## Bugs
 
-As this is an alpha release, there are bound to be many unforeseen bugs in the software. If it segfaults or something, I take no responsibility, but I *would* be very appreciative a little nudge in the way of a new GitHub issue pointing out your problem. ;)
+As this is an alpha release, there are bound to be many unforeseen bugs in the software. If it segfaults or something, I take no responsibility, but I *would* be very appreciative of a little nudge in the way of a new GitHub issue pointing out your problem. ;)
 
 ## License
 
