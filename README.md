@@ -1,7 +1,13 @@
 # nxsh
 BusyBox-like remote shell for the Nintendo Switch over telnet
 
-![screenshot1](https://github.com/Cesura/nxsh/blob/master/screenshots/nxsh-switch.jpg)
+Switch view:
+
+![screenshot_1](https://i.imgur.com/qBBy9M4.jpg)
+
+Remote view:
+
+![screenshot_2](https://i.imgur.com/EGoefPF.png)
 
 
 ## Installation
