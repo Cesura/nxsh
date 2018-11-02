@@ -48,7 +48,7 @@ where address is your Switch's IP.
 
 ### Windows
 
-The built-in Windows telnet client does not play nicely with nxsh, so I recommend installing [PuTTY](https://www.putty.org/).
+The built-in Windows telnet client does not play nicely with nxsh, so I recommend installing [PuTTY](https://www.putty.org/). Note that connecting via a "raw" connection instead of a "telnet" one will avoid a pesky "command not found" message upon initialization of the shell. The telnet protocol sends some garbage text as it's negotiating the connection, so if you want a clean-looking shell, ditch that and go for a raw socket.
 
 ## Usage
 
