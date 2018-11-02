@@ -68,7 +68,7 @@ For a full list of commands supported by your current version of nxsh, type "hel
 Right now, I'm working on:
 * Smoothing out general stability of the shell
 * Implementing a 'fetch' command, to download files from remote HTTP servers
-* Developing some sort of basic shell language for very basic scripting
+* Developing some sort of shell language for very basic scripting
 
 ## Bugs
 
