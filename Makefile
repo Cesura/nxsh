@@ -96,6 +96,7 @@ else
 endif
 #---------------------------------------------------------------------------------
 
+
 export OFILES_BIN	:=	$(addsuffix .o,$(BINFILES))
 export OFILES_SRC	:=	$(CPPFILES:.cpp=.o) $(CFILES:.c=.o) $(SFILES:.s=.o)
 export OFILES 	:=	$(OFILES_BIN) $(OFILES_SRC)
@@ -139,7 +140,7 @@ ifneq ($(APP_AUTHOR),)
 endif
 
 ifneq ($(APP_VERSION),)
-	export NACPFLAGS += --version=$(ALL_VERSION)
+	export NACPFLAGS += --version=$(APP_VERSION)
 endif
 
 ifneq ($(ROMFS),)

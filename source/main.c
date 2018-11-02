@@ -219,6 +219,16 @@ char *nxsh_command(char *command, int argc, char **argv) {
         output = nxsh_rm(argc, argv);
     }
 
+    // Copy file/directory
+    else if (strcmp(command, "cp") == 0) {
+        output = nxsh_cp(argc, argv);
+    }
+
+    // Move file/directory
+    else if (strcmp(command, "mv") == 0) {
+        output = nxsh_cp(argc, argv);
+    }
+
     // Print out file contents
     else if (strcmp(command, "cat") == 0) {
         output = nxsh_cat(argc, argv);

@@ -3,7 +3,9 @@
 #include <ctype.h>
 #include <stddef.h>
 #include <dirent.h>
+#include <unistd.h>
 #include <errno.h>
+#include <sys/stat.h>
 
 #include <nxsh.h>
  
@@ -71,16 +73,42 @@ int is_dir_empty(char *dir) {
     @returns - 1 if file, 0 if not
 */
 int is_file(char *name) {
-    DIR* handle = opendir(name);
+	struct stat buf;
+	stat(name, &buf);
+	return S_ISREG(buf.st_mode);
+}
 
-    if (handle != NULL) {
-        closedir(handle);
-        return 0;
+/*
+    Check if file exists
+    @param name - path in question
+
+    @returns - 1 if it does, 0 if not
+*/
+int exists(char *name) {
+	if (access(name, F_OK) == -1)
+		return 0;
+	return 1;
+}
+
+
+/*
+    Similar to basename()
+    @param path - full path of file
+
+    @returns - the base file name of the given path
+*/
+char *filename(char *path) {
+    char *fullpath = malloc(strlen(path)+1);
+    strcpy(fullpath, path);
+    char *filename = malloc(strlen(path)+1);
+
+    char *tok = strtok(fullpath, "/");
+    strcpy(filename, tok);
+
+    while ((tok = strtok(NULL, "/")) != NULL) {
+        strcpy(filename, tok);
     }
 
-    if (errno == ENOTDIR) {
-        return 1;
-    }
-
-    return -1;
+    free(fullpath);
+    return filename;
 }

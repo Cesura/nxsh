@@ -1,0 +1,7 @@
+======= Version 0.1.2 alpha (Nov 2, 2018) =======
+* Added cp command
+* Added mv command
+* Fixed some uninteresting bugs
+* Updated help menu
+
+NOTE: File operations on the SD card seem to be very slow
