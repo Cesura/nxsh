@@ -1,5 +1,5 @@
 # nxsh
-BusyBox-like remote shell for Nintendo Switch over telnet
+BusyBox-like remote shell for the Nintendo Switch over telnet
 
 ![screenshot1](https://github.com/Cesura/nxsh/blob/master/screenshots/nxsh-switch.jpg)
 
