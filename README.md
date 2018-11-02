@@ -52,14 +52,23 @@ The built-in Windows telnet client does not play nicely with nxsh, so I recommen
 
 ## Usage
 
-nxsh bundles its own implementations of basic coreutils, such as (but not limited to):
+nxsh bundles its own implementations of basic coreutils, such as (but not necessarily limited to):
 * cat
 * ls
 * rm
+* cp
+* mv
 
 etc. etc.
 
 For a full list of commands supported by your current version of nxsh, type "help" in the prompt.
+
+## In Progress
+
+Right now, I'm working on:
+* Smoothing out general stability of the shell
+* Implementing a 'fetch' command, to download files from remote HTTP servers
+* Developing some sort of basic shell language for very basic scripting
 
 ## Bugs
 
