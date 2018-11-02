@@ -229,7 +229,7 @@ char *nxsh_command(char *command, int argc, char **argv) {
 
     // Move file/directory
     else if (strcmp(command, "mv") == 0) {
-        output = nxsh_cp(argc, argv);
+        output = nxsh_mv(argc, argv);
     }
 
     // Print out file contents

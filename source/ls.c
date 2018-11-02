@@ -51,6 +51,10 @@ char *nxsh_ls(int argc, char **argv) {
         }
     }
 
+    // Check if it is indeed a directory
+    if (is_file(dir))
+        return error("Error: not a directory\r\n");
+
     handle = opendir(dir);
     if (handle) {
 

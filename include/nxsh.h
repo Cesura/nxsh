@@ -19,7 +19,7 @@
                     "\texit - exit the shell\r\n" \
                     "\thelp - print this message\r\n"
 
-#define NXSH_VERSION "0.1.2 alpha"
+#define NXSH_VERSION "0.1.3 alpha"
 
 /* Functions in main.c */
 void nxsh_session(int connfd);

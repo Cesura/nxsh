@@ -16,7 +16,7 @@
 */
 char *nxsh_cat(int argc, char **argv) {
     if (argc == 0)
-        return error("Error: please specify a file.\r\n");
+        return error("Usage: cat [file] ([file2] [file3] ...)\r\n");
 
     // Parse the arguments
     FILE *fp;

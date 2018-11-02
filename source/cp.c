@@ -155,10 +155,9 @@ int recursive_copy(char *src, char *dest) {
     @returns - NULL if everything worked, otherwise error message
 */
 char *nxsh_cp(int argc, char **argv) {
-    if (argc == 0)
-        return error("Error: please specify a file or directory\r\n");
-    else if (argc == 1)
-        return error("Error: please specify a destination\r\n");
+    if (argc < 2)
+        return error("Usage: cp [options] [source] [destination]\r\n" \
+            "Options:\r\n\t-r\tcopy directories recursively\r\n");
 
     int FLAG_R = 0;
     char *targets[128];

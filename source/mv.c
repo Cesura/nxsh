@@ -13,24 +13,25 @@
 */
 char *nxsh_mv(int argc, char **argv) {
 
-    if (argc != 2)
-        return error("Error: this command takes two arguments\r\n");
+    if (argc < 2)
+        return error("Usage: mv [source] [target]\r\n");
     
     argv[2] = malloc(sizeof(char) * 3);
     strcpy(argv[2], "-r");
     argc++;
 
+    // First, do the copy
     char *cp_status = nxsh_cp(argc, argv);
     if (cp_status != NULL)
         return cp_status;
-
-
     free(cp_status);
+
+    // Now, delete the original
     argv[1] = argv[2];
     argc = 2;
     char *rm_status = nxsh_rm(argc, argv);
     if (rm_status != NULL)
-        return cp_status;
+        return rm_status;
     
     return NULL;
 }

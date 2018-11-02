@@ -73,7 +73,8 @@ int recursive_delete(const char *path) {
 */
 char *nxsh_rm(int argc, char **argv) {
     if (argc == 0)
-        return error("Error: please specify a file or directory\r\n");
+        return error("Usage: rm [options] [file/directory]\r\n" \
+                    "Options:\r\n\t-r\trecurse into directory\r\n");
 
     int FLAG_R = 0;
     char *targets[128];
@@ -91,7 +92,7 @@ char *nxsh_rm(int argc, char **argv) {
                         break;
                     default:
                         return error("Usage: rm [options] [file/directory]\r\n" \
-                                    "Options:\r\n\t-r\trecurse into directory.\r\n");
+                                    "Options:\r\n\t-r\trecurse into directory\r\n");
                 }
             }
         }
@@ -103,12 +104,16 @@ char *nxsh_rm(int argc, char **argv) {
     // Loop through each file/directory
     for (int i=0; i<count; i++) {
         
+        // Check if the target exists
+        if (!exists(targets[i]))
+            return error("Error: no such file or directory\r\n");
+
         // Check if it's a directory
         if (!is_file(targets[i])) {
 
             // Recursive flag not set
             if (!FLAG_R) {
-                char *error = malloc(sizeof(char) * (strlen(targets[i] + 128)));
+                char *error = malloc(sizeof(char) * (strlen(targets[i]) + 128));
                 sprintf(error, "Error: cannot recurse into directory '%s'\r\n", targets[i]);
                 return error;
             }
