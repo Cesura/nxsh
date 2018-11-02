@@ -146,22 +146,25 @@ void nxsh_session(int connfd) {
                 strcpy(command_buf, recv_buf);
             }
 
-            char *output = nxsh_command(command_buf, argc, argv);
+            if (strlen(command_buf) != 0) {
 
-            // Exit the session
-            if (output != NULL && strcmp(output, "_nxsh_exit") == 0) {
-                close(connfd);
-                free(output);
-                break;
-            }
-            else {
+                char *output = nxsh_command(command_buf, argc, argv);
 
-                // Send the response to the client
-                if (output != NULL) {
-                    send(connfd, output, strlen(output)+1, 0);
+                // Exit the session
+                if (output != NULL && strcmp(output, "_nxsh_exit") == 0) {
+                    close(connfd);
                     free(output);
+                    break;
                 }
-                send(connfd, NXSH_SEPARATOR, strlen(NXSH_SEPARATOR)+1, 0);
+                else {
+
+                    // Send the response to the client
+                    if (output != NULL) {
+                        send(connfd, output, strlen(output)+1, 0);
+                        free(output);
+                    }
+                    send(connfd, NXSH_SEPARATOR, strlen(NXSH_SEPARATOR)+1, 0);
+                }
             }
 
         }

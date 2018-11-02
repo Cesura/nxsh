@@ -3,5 +3,6 @@
 * Added mv command
 * Fixed some uninteresting bugs
 * Updated help menu
+* Fixed PuTTY "command not found" issue
 
 NOTE: File operations on the SD card seem to be very slow
