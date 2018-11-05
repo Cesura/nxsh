@@ -7,7 +7,7 @@ Switch view:
 
 Remote view:
 
-![screenshot_2](https://i.imgur.com/EGoefPF.png)
+![screenshot_2](https://i.imgur.com/SaL7JNQ.png)
 
 
 ## Installation
