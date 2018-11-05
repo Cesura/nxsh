@@ -14,3 +14,7 @@ NOTE: File operations on the SD card seem to be very slow
 ======= Version 0.1.4 alpha (Nov 5, 2018) =======
 * Adding logging functionality
 * Updated prompt to be more traditionally unix-like
+
+======= Version 0.1.5 alpha (Nov 5, 2018) =======
+* Added fetch command to fetch files from remote server
+* Added chmod (however it's not functional on the switch, so I'm investigating that)
