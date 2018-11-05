@@ -28,12 +28,12 @@ char *nxsh_log(int argc, char **argv) {
     // Enable logging
     if (strcmp(argv[0], "enable") == 0) {
 
-        if (!exists(NXSH_LOG_DIR))
-            if (mkdir(NXSH_LOG_DIR, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH) != 0)
+        if (!exists(NXSH_DIR))
+            if (mkdir(NXSH_DIR, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH) != 0)
                 return error("Error: could not create log directory\r\n");
         
-        char *log_file = malloc(sizeof(char) * (strlen(NXSH_LOG_DIR) + 11));
-        sprintf(log_file, "%s/nxsh.log", NXSH_LOG_DIR);
+        char *log_file = malloc(sizeof(char) * (strlen(NXSH_DIR) + 11));
+        sprintf(log_file, "%s/nxsh.log", NXSH_DIR);
 
         if (!exists(log_file)) {
             FILE *fp = fopen(log_file, "w+");
@@ -61,8 +61,8 @@ char *nxsh_log(int argc, char **argv) {
         if (!logging_enabled())
             return error("Logging is not enabled (?)\r\n");
         else {
-            char *log_file = malloc(sizeof(char) * (strlen(NXSH_LOG_DIR) + 11));
-            sprintf(log_file, "%s/nxsh.log", NXSH_LOG_DIR);
+            char *log_file = malloc(sizeof(char) * (strlen(NXSH_DIR) + 11));
+            sprintf(log_file, "%s/nxsh.log", NXSH_DIR);
  
             if (remove(log_file) != 0) {
                 free(log_file);
@@ -81,11 +81,11 @@ char *nxsh_log(int argc, char **argv) {
 
     // Get logging status
     else if (strcmp(argv[0], "status") == 0) {
-        if (!exists(NXSH_LOG_DIR))
+        if (!exists(NXSH_DIR))
             return error("Logging status: disabled\r\n");
         
-        char *log_file = malloc(sizeof(char) * (strlen(NXSH_LOG_DIR) + 12));
-        sprintf(log_file, "%s/nxsh.log", NXSH_LOG_DIR);
+        char *log_file = malloc(sizeof(char) * (strlen(NXSH_DIR) + 12));
+        sprintf(log_file, "%s/nxsh.log", NXSH_DIR);
 
         if (!exists(log_file)) {
             free(log_file);
@@ -110,8 +110,8 @@ char *nxsh_log(int argc, char **argv) {
 */
 void write_log(char *input) {
     if (input != NULL && strlen(input) > 0) {
-        char *log_file = malloc(sizeof(char) * (strlen(NXSH_LOG_DIR) + 11));
-        sprintf(log_file, "%s/nxsh.log", NXSH_LOG_DIR);
+        char *log_file = malloc(sizeof(char) * (strlen(NXSH_DIR) + 11));
+        sprintf(log_file, "%s/nxsh.log", NXSH_DIR);
 
         FILE *log = fopen(log_file, "a");  
         if (log) {
@@ -134,8 +134,8 @@ void write_log(char *input) {
 */
 void write_log_raw(char *input) {
     if (input != NULL && strlen(input) > 0) {
-        char *log_file = malloc(sizeof(char) * (strlen(NXSH_LOG_DIR) + 11));
-        sprintf(log_file, "%s/nxsh.log", NXSH_LOG_DIR);
+        char *log_file = malloc(sizeof(char) * (strlen(NXSH_DIR) + 11));
+        sprintf(log_file, "%s/nxsh.log", NXSH_DIR);
 
         FILE *log = fopen(log_file, "a");  
         if (log) {
@@ -155,11 +155,11 @@ void write_log_raw(char *input) {
 int logging_enabled() {
 
     // Logging directory doesn't exist
-    if (!exists(NXSH_LOG_DIR))
+    if (!exists(NXSH_DIR))
         return 0;
     else {
-        char *log_file = malloc(sizeof(char) * (strlen(NXSH_LOG_DIR) + 11));
-        sprintf(log_file, "%s/nxsh.log", NXSH_LOG_DIR);
+        char *log_file = malloc(sizeof(char) * (strlen(NXSH_DIR) + 11));
+        sprintf(log_file, "%s/nxsh.log", NXSH_DIR);
 
         // Log file doesn't exist
         if (!exists(log_file)) {

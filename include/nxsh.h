@@ -12,14 +12,17 @@
                     "\tmkdir - make directory\r\n" \
                     "\trm - remove file or directory\r\n" \
                     "\tcp - copy file or directory\r\n" \
+                    "\tchmod - change file permissions\r\n" \
                     "\tcat - print file on standard output\r\n" \
+                    "\tpasswd - set/update/clear password\r\n" \
                     "\tlog - enable/disable logging\r\n" \
                     "\tfetch - download file from remote server\r\n" \
                     "\tversion - display NXSH version\r\n" \
                     "\thelp - print this message\r\n"
 
-#define NXSH_LOG_DIR "/logs"
-#define NXSH_VERSION "0.1.5 alpha"
+#define NXSH_DIR "/nxsh"
+
+#define NXSH_VERSION "0.1.6 alpha"
 
 int NXSH_LOGGING_ENABLED;
 
@@ -37,11 +40,13 @@ char *nxsh_mv(int argc, char **argv);
 char *nxsh_chmod(int argc, char **argv);
 char *nxsh_cat(int argc, char **argv);
 char *nxsh_log(int argc, char **argv);
+char *nxsh_passwd(int argc, char **argv);
 char *nxsh_fetch(int argc, char **argv, int connfd);
 
 /* Behind the scenes */
 char *nxsh_cwd();
 char *nxsh_prompt();
+int nxsh_authenticate(char *password);
 
 /* Logging functions */
 int logging_enabled();

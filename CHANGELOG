@@ -18,3 +18,6 @@ NOTE: File operations on the SD card seem to be very slow
 ======= Version 0.1.5 alpha (Nov 5, 2018) =======
 * Added fetch command to fetch files from remote server
 * Added chmod (however it's not functional on the switch, so I'm investigating that)
+
+======= Version 0.1.6 alpha (Nov 5, 2018) =======
+* Added password authentication (see the passwd command)

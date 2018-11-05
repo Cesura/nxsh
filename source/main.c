@@ -12,7 +12,8 @@
 #include <switch.h>
 #include <nxsh.h>
 
-
+#define NXSH_PASSWORD_PROMPT "Enter password: "
+#define NXSH_PASSWORD_ERROR "Incorrect password entered\r\n"
 
 int main(int argc, char **argv) {
     consoleInit(NULL);
@@ -72,10 +73,53 @@ int main(int argc, char **argv) {
             printf("New connection established from %s\n", inet_ntoa(client_addr.sin_addr));
             consoleUpdate(NULL);
 
+
             // Send the welcome message
             send(connfd, NXSH_SEPARATOR, strlen(NXSH_SEPARATOR)+1, 0);
             send(connfd, NXSH_WELCOME, strlen(NXSH_WELCOME)+1, 0);
             send(connfd, NXSH_SEPARATOR, strlen(NXSH_SEPARATOR)+1, 0);
+
+            // Get password file path
+            char *pw_file = malloc(sizeof(char) * (strlen(NXSH_DIR) + 10));
+            sprintf(pw_file, "%s/nxsh.pw", NXSH_DIR);
+
+            // See if we need to prompt for the password
+            if (exists(pw_file)) {
+                free(pw_file);
+                char *pw_buf = malloc(sizeof(char) * 256);
+                size_t len;
+                int authenticated = 0;
+
+                // Loop until a correct password is entered
+                while (!authenticated) {
+                    send(connfd, NXSH_PASSWORD_PROMPT, strlen(NXSH_PASSWORD_PROMPT)+1, 0);
+                    len = recv(connfd, pw_buf, 256, 0);
+
+                    // Error occurred on socket receive
+                    if (len <= 0) {
+                        close(connfd);
+                        free(pw_buf);
+                        return 0;
+                    }
+                    else {
+
+                        // Strip the newline character, if it exists
+                        if (pw_buf[len-1] == '\n')
+                            pw_buf[len-1] = '\0';
+                        else
+                            pw_buf[len] = '\0';
+
+                        trim(pw_buf);
+
+                        // Try authentication
+                        if (nxsh_authenticate(pw_buf))
+                            authenticated = 1;
+                        else
+                            send(connfd, NXSH_PASSWORD_ERROR, strlen(NXSH_PASSWORD_ERROR)+1, 0);
+                    }
+                }
+                free(pw_buf);
+            }
 
             // Here is where we'd ideally implement some multithreading logic
             nxsh_session(connfd);
@@ -224,6 +268,7 @@ char *nxsh_command(int connfd, char *command, int argc, char **argv) {
     else if (strcmp(command, "cp") == 0) { output = nxsh_cp(argc, argv); }
     else if (strcmp(command, "mv") == 0) { output = nxsh_mv(argc, argv); }
     else if (strcmp(command, "cat") == 0) { output = nxsh_cat(argc, argv); }
+    else if (strcmp(command, "passwd") == 0) { output = nxsh_passwd(argc, argv); }
     else if (strcmp(command, "log") == 0) { output = nxsh_log(argc, argv); }
     else if (strcmp(command, "fetch") == 0) { output = nxsh_fetch(argc, argv, connfd); }
 
