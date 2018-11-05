@@ -27,7 +27,7 @@ $ cd nxsh
 $ make
 ```
 
-I've included a Makefile for simplifying the build process, but you *will* need to have an aarch64 cross compiler installed, as well as the latest version of libnx and devkitpro. More information on how to set up a proper build environment can be found [here](https://switchbrew.org/wiki/Setting_up_Development_Environment).
+I've included a Makefile for simplifying the build process, but you *will* need to have an aarch64 cross compiler installed, as well as the latest version of libnx and devkitpro. As of version 0.1.5 alpha, you will need to link it against libcurl as well. More information on how to set up a proper build environment can be found [here](https://switchbrew.org/wiki/Setting_up_Development_Environment).
 
 ## Connecting
 
