@@ -10,3 +10,7 @@ NOTE: File operations on the SD card seem to be very slow
 ======= Version 0.1.3 alpha (Nov 2, 2018) =======
 * Fixed sporadic segfault when trying to delete directory without -r switch
 * Clarified some usage messages
+
+======= Version 0.1.4 alpha (Nov 5, 2018) =======
+* Adding logging functionality
+* Updated prompt to be more traditionally unix-like

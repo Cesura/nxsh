@@ -12,6 +12,8 @@
 #include <switch.h>
 #include <nxsh.h>
 
+
+
 int main(int argc, char **argv) {
     consoleInit(NULL);
     nifmInitialize();
@@ -22,9 +24,9 @@ int main(int argc, char **argv) {
     printf("  / __ \\| |/_/ ___/ __ \\\r\n");
     printf(" / / / />  <(__  ) / / /\r\n");
     printf("/_/ /_/_/|_/____/_/ /_/ \r\n");
-    printf("==========================\r\n");
+    printf("===========================\r\n");
     printf("Welcome to nxsh %s\r\n", NXSH_VERSION);  
-    printf("==========================\r\n\r\n");
+    printf("===========================\r\n\r\n");
     consoleUpdate(NULL);
 
     int rc;
@@ -99,6 +101,19 @@ void nxsh_session(int connfd) {
     char *tok, *command_buf;
     char *argv[128];
     size_t argc;
+    char *prompt;
+
+    prompt = nxsh_prompt();
+    send(connfd, prompt, strlen(prompt)+1, 0);
+    free(prompt);
+
+    // Check if logging is enabled
+    if (logging_enabled()) {
+        NXSH_LOGGING_ENABLED = 1;
+    }
+    else {
+        NXSH_LOGGING_ENABLED = 0;
+    }
 
     for (;;) {
         len = recv(connfd, recv_buf, 1024, 0);
@@ -119,6 +134,10 @@ void nxsh_session(int connfd) {
             trim(recv_buf);
             len = strlen(recv_buf);
             argc = 0;
+
+            // Write to the log
+            if (NXSH_LOGGING_ENABLED)
+                write_log(recv_buf);
 
             // Command passed with arguments
             if (strstr(recv_buf, " ") != NULL) {
@@ -161,9 +180,16 @@ void nxsh_session(int connfd) {
                     // Send the response to the client
                     if (output != NULL) {
                         send(connfd, output, strlen(output)+1, 0);
+
+                        if (NXSH_LOGGING_ENABLED)
+                            write_log_raw(output);
+
                         free(output);
                     }
-                    send(connfd, NXSH_SEPARATOR, strlen(NXSH_SEPARATOR)+1, 0);
+
+                    prompt = nxsh_prompt();
+                    send(connfd, prompt, strlen(prompt)+1, 0);
+                    free(prompt);
                 }
             }
 
@@ -230,6 +256,11 @@ char *nxsh_command(char *command, int argc, char **argv) {
     // Move file/directory
     else if (strcmp(command, "mv") == 0) {
         output = nxsh_mv(argc, argv);
+    }
+
+    // Control logging
+    else if (strcmp(command, "log") == 0) {
+        output = nxsh_log(argc, argv);
     }
 
     // Print out file contents

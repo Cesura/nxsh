@@ -112,3 +112,32 @@ char *filename(char *path) {
     free(fullpath);
     return filename;
 }
+
+/*
+	Strip the SD card prefix from the path
+	@param inpath - unstripped path
+
+	@returns - either the input string (if no prefix present), or
+				a pointer to the stripped version
+*/
+char *strip_prefix(char *inpath) {
+    if (strlen(inpath) < 5)
+        return inpath;
+
+    char *test = malloc(sizeof(char) * 6);
+    strncpy(test, inpath, 5);
+    test[5] = '\0';
+
+    if (strcmp(test, "sdmc:") == 0) {
+        char *outpath = malloc(sizeof(char) * (strlen(inpath) - 4));
+        memcpy(outpath, inpath+5, strlen(inpath)-4);
+
+        free(inpath);
+        free(test);
+        return outpath;
+    }
+    else {
+        free(test);
+        return inpath;
+    }
+}
