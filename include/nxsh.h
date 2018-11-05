@@ -13,18 +13,19 @@
                     "\trm - remove file or directory\r\n" \
                     "\tcp - copy file or directory\r\n" \
                     "\tcat - print file on standard output\r\n" \
-                    "\tlog - enable/disablel logging\r\n" \
+                    "\tlog - enable/disable logging\r\n" \
+                    "\tfetch - download file from remote server\r\n" \
                     "\tversion - display NXSH version\r\n" \
                     "\thelp - print this message\r\n"
 
 #define NXSH_LOG_DIR "/logs"
-#define NXSH_VERSION "0.1.4 alpha"
+#define NXSH_VERSION "0.1.5 alpha"
 
 int NXSH_LOGGING_ENABLED;
 
 /* Functions in main.c */
 void nxsh_session(int connfd);
-char *nxsh_command(char *command, int argc, char **argv);
+char *nxsh_command(int connfd, char *command, int argc, char **argv);
 
 /* Basic shell commands */
 char *nxsh_ls(int argc, char **argv);
@@ -33,8 +34,10 @@ char *nxsh_mkdir(int argc, char **argv);
 char *nxsh_rm(int argc, char **argv);
 char *nxsh_cp(int argc, char **argv);
 char *nxsh_mv(int argc, char **argv);
+char *nxsh_chmod(int argc, char **argv);
 char *nxsh_cat(int argc, char **argv);
 char *nxsh_log(int argc, char **argv);
+char *nxsh_fetch(int argc, char **argv, int connfd);
 
 /* Behind the scenes */
 char *nxsh_cwd();

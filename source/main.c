@@ -167,7 +167,7 @@ void nxsh_session(int connfd) {
 
             if (strlen(command_buf) != 0) {
 
-                char *output = nxsh_command(command_buf, argc, argv);
+                char *output = nxsh_command(connfd, command_buf, argc, argv);
 
                 // Exit the session
                 if (output != NULL && strcmp(output, "_nxsh_exit") == 0) {
@@ -201,13 +201,14 @@ void nxsh_session(int connfd) {
 
 /*
     Respond to a given command (this can be done better :o)
+    @param connfd - file descriptor for client socket
     @param command - command string
     @param argc - argument count
     @param argv - array of pointers to arguments
     
     @returns malloc'd output buffer to be sent back to the client
 */
-char *nxsh_command(char *command, int argc, char **argv) {
+char *nxsh_command(int connfd, char *command, int argc, char **argv) {
 
     char *output = NULL;
 
@@ -216,10 +217,15 @@ char *nxsh_command(char *command, int argc, char **argv) {
     escape[0] = 0x04;
     escape[1] = '\0';
 
-    // Directory listing
-    if (strcmp(command, "ls") == 0) {
-        output = nxsh_ls(argc, argv);
-    }
+    if (strcmp(command, "ls") == 0) { output = nxsh_ls(argc, argv); }
+    else if (strcmp(command, "cd") == 0) { output = nxsh_cd(argc, argv); }
+    else if (strcmp(command, "mkdir") == 0) { output = nxsh_mkdir(argc, argv); }
+    else if (strcmp(command, "rm") == 0) { output = nxsh_rm(argc, argv); }
+    else if (strcmp(command, "cp") == 0) { output = nxsh_cp(argc, argv); }
+    else if (strcmp(command, "mv") == 0) { output = nxsh_mv(argc, argv); }
+    else if (strcmp(command, "cat") == 0) { output = nxsh_cat(argc, argv); }
+    else if (strcmp(command, "log") == 0) { output = nxsh_log(argc, argv); }
+    else if (strcmp(command, "fetch") == 0) { output = nxsh_fetch(argc, argv, connfd); }
 
     // Print working directory
     else if (strcmp(command, "pwd") == 0) {
@@ -231,41 +237,6 @@ char *nxsh_command(char *command, int argc, char **argv) {
         output[len++] = '\r';
         output[len++] = '\n';
         output[len] = '\0';
-    }
-
-    // Change directory
-    else if (strcmp(command, "cd") == 0) {
-        output = nxsh_cd(argc, argv);
-    }
-
-    // Make directory
-    else if (strcmp(command, "mkdir") == 0) {
-        output = nxsh_mkdir(argc, argv);
-    }
-
-    // Remove file/directory
-    else if (strcmp(command, "rm") == 0) {
-        output = nxsh_rm(argc, argv);
-    }
-
-    // Copy file/directory
-    else if (strcmp(command, "cp") == 0) {
-        output = nxsh_cp(argc, argv);
-    }
-
-    // Move file/directory
-    else if (strcmp(command, "mv") == 0) {
-        output = nxsh_mv(argc, argv);
-    }
-
-    // Control logging
-    else if (strcmp(command, "log") == 0) {
-        output = nxsh_log(argc, argv);
-    }
-
-    // Print out file contents
-    else if (strcmp(command, "cat") == 0) {
-        output = nxsh_cat(argc, argv);
     }
 
     // Display help
