@@ -84,7 +84,7 @@ char *nxsh_log(int argc, char **argv) {
         if (!exists(NXSH_LOG_DIR))
             return error("Logging status: disabled\r\n");
         
-        char *log_file = malloc(sizeof(char) * (strlen(NXSH_LOG_DIR) + 11));
+        char *log_file = malloc(sizeof(char) * (strlen(NXSH_LOG_DIR) + 12));
         sprintf(log_file, "%s/nxsh.log", NXSH_LOG_DIR);
 
         if (!exists(log_file)) {
@@ -120,7 +120,7 @@ void write_log(char *input) {
             char s[64];
             strftime(s, sizeof(s), "%c", tm);
 
-            fprintf(log, "[%s] %s\n", s, input);  
+            fprintf(log, "[%s] %s\r\n", s, input);  
             fclose(log);  
         }
 
@@ -139,7 +139,7 @@ void write_log_raw(char *input) {
 
         FILE *log = fopen(log_file, "a");  
         if (log) {
-            fprintf(log, "%s\n", input);  
+            fprintf(log, "%s\r\n", input);  
             fclose(log);  
         }
 
