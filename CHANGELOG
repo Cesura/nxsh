@@ -21,3 +21,9 @@ NOTE: File operations on the SD card seem to be very slow
 
 ======= Version 0.1.6 alpha (Nov 5, 2018) =======
 * Added password authentication (see the passwd command)
+
+======= Version 0.1.7 beta (Nov 14, 2018) =======
+* Added JS scripting functionality via duktape. You can now write
+scripts and execute them, provided they are ECMAScript 5.1 compliant.
+See the examples/ directory for a bit more information.
+* Added native print(), readFile(), and writeFile() functions (see above)

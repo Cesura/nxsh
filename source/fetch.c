@@ -26,7 +26,7 @@ int progress_bar(void *bar, double total, double downloaded, double ultotal, dou
     int percent = (int)((downloaded / total)*(float)100);
 
     if (percent % 4 == 0 && percent > last_percent) {
-        if (percent == 4)
+        if (percent == 0)
             send(response_fd, "[", 1, 0);
 
         send(response_fd, "=", 1, 0);
@@ -69,6 +69,9 @@ char *nxsh_fetch(int argc, char **argv, int connfd) {
     curl_easy_setopt(handle, CURLOPT_URL, argv[0]);
     curl_easy_setopt(handle, CURLOPT_NOPROGRESS, 0L);
     curl_easy_setopt(handle, CURLOPT_PROGRESSFUNCTION, progress_bar);
+    curl_easy_setopt(handle, CURLOPT_SSL_VERIFYPEER, 0L);
+    curl_easy_setopt(handle, CURLOPT_SSL_VERIFYHOST, 0L);
+    curl_easy_setopt(handle, CURLOPT_SSL_VERIFYSTATUS, 0L);
     curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, write_data);
 
     // Open the output file
@@ -78,7 +81,7 @@ char *nxsh_fetch(int argc, char **argv, int connfd) {
     if (output) {
 
         // Set our globals so the progress bar function can see them
-        last_percent = 0;
+        last_percent = -1;
         response_fd = connfd;
         
         // Send the beginning message
@@ -101,7 +104,8 @@ char *nxsh_fetch(int argc, char **argv, int connfd) {
             remove(output_file);
 
         free(output_file);
-        return error("Error: could not download specified file\r\n");
+
+        return error("Error: could not download specified file (note that HTTPS is not supported)\r\n");
     }
     
     // Send ending message

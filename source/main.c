@@ -9,11 +9,12 @@
 #include <arpa/inet.h>
 #include <errno.h>
 
-#include <switch.h>
-#include <nxsh.h>
-
+int NXSH_LOGGING_ENABLED;
 #define NXSH_PASSWORD_PROMPT "Enter password: "
-#define NXSH_PASSWORD_ERROR "Incorrect password entered\r\n"
+#define NXSH_PASSWORD_ERROR "\r\nIncorrect password entered\r\n"
+
+#include <nxsh.h>
+#include <switch.h>
 
 int main(int argc, char **argv) {
     consoleInit(NULL);
@@ -72,7 +73,6 @@ int main(int argc, char **argv) {
             int connfd = accept(listenfd, (struct sockaddr*)&client_addr, &client_len);
             printf("New connection established from %s\n", inet_ntoa(client_addr.sin_addr));
             consoleUpdate(NULL);
-
 
             // Send the welcome message
             send(connfd, NXSH_SEPARATOR, strlen(NXSH_SEPARATOR)+1, 0);
@@ -143,6 +143,7 @@ void nxsh_session(int connfd) {
     char *recv_buf = malloc(sizeof(char) * 1024);
     size_t len;
     char *tok, *command_buf;
+    char *prev_command = malloc(sizeof(char) * 128);
     char *argv[128];
     size_t argc;
     char *prompt;
@@ -152,12 +153,10 @@ void nxsh_session(int connfd) {
     free(prompt);
 
     // Check if logging is enabled
-    if (logging_enabled()) {
+    if (logging_enabled())
         NXSH_LOGGING_ENABLED = 1;
-    }
-    else {
+    else
         NXSH_LOGGING_ENABLED = 0;
-    }
 
     for (;;) {
         len = recv(connfd, recv_buf, 1024, 0);
@@ -182,6 +181,16 @@ void nxsh_session(int connfd) {
             // Write to the log
             if (NXSH_LOGGING_ENABLED)
                 write_log(recv_buf);
+
+            // See if we should repeat the previous command
+            if (strcmp(recv_buf, "!!") == 0) {
+                strcpy(recv_buf, prev_command);
+            }
+            else {
+                free(prev_command);
+                prev_command = malloc(sizeof(char) * (strlen(recv_buf)+1));
+                strcpy(prev_command, recv_buf);
+            }
 
             // Command passed with arguments
             if (strstr(recv_buf, " ") != NULL) {
@@ -267,9 +276,10 @@ char *nxsh_command(int connfd, char *command, int argc, char **argv) {
     else if (strcmp(command, "rm") == 0) { output = nxsh_rm(argc, argv); }
     else if (strcmp(command, "cp") == 0) { output = nxsh_cp(argc, argv); }
     else if (strcmp(command, "mv") == 0) { output = nxsh_mv(argc, argv); }
+    else if (strcmp(command, "chmod") == 0) { output = nxsh_chmod(argc, argv); }
     else if (strcmp(command, "cat") == 0) { output = nxsh_cat(argc, argv); }
-    else if (strcmp(command, "passwd") == 0) { output = nxsh_passwd(argc, argv); }
     else if (strcmp(command, "log") == 0) { output = nxsh_log(argc, argv); }
+    else if (strcmp(command, "passwd") == 0) { output = nxsh_passwd(argc, argv); }
     else if (strcmp(command, "fetch") == 0) { output = nxsh_fetch(argc, argv, connfd); }
 
     // Print working directory
@@ -304,6 +314,11 @@ char *nxsh_command(int connfd, char *command, int argc, char **argv) {
     // End the session (Ctrl+D)
     else if (strcmp(command, escape) == 0) {
         return error("_nxsh_exit");
+    }
+
+    // See if we're trying to invoke a script
+    else if (exists(command) && is_file(command)) {
+        nxsh_script(command, argc, argv, connfd);
     }
 
     else {
