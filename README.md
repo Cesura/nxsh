@@ -63,13 +63,22 @@ etc. etc.
 
 For a full list of commands supported by your current version of nxsh, type "help" in the prompt.
 
+## Scripting
+
+As of version 0.1.7 beta, nxsh supports scripting via an ECMAScript-compliant engine named duktape. You can execute scripts in the following way:
+```
+$ ./script_name.js
+```
+
+See examples/quadratic.js for an basic example script that works with the shell. As many of the more desirable JS features are non-standard and machine-dependent (such as file I/O), I am slowly but surely writing my own implementations of them.
+
 ## In Progress
 
 Right now, I'm working on:
+* Passing command line arguments to JS scripts
 * Smoothing out general stability of the shell
-* chmod and other basic coreutils
-* Developing some sort of shell language for very basic scripting
 * Executing other NROs from within the shell
+* Any other requests you'd like to throw my way
 
 ## Bugs
 
