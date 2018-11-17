@@ -2,10 +2,12 @@
 
 all: nro kip
 
-nro: rebuild
+nro:
+	@$(MAKE) rebuild
 	@$(MAKE) -f Makefile_nro
 
-kip: rebuild
+kip:
+	@$(MAKE) rebuild
 	$(MAKE) -f Makefile_kip
 
 clean:
