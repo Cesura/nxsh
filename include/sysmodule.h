@@ -8,6 +8,8 @@ char fake_heap[HEAP_SIZE];
 
 void __libnx_initheap(void);
 
+void __libnx_init_time(void);
+
 void fatalLater(Result err);
 
 void registerFspLr();
