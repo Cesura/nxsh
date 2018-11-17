@@ -8,11 +8,11 @@ nro:
 
 kip:
 	@$(MAKE) rebuild
-	$(MAKE) -f Makefile_kip
+	@$(MAKE) -f Makefile_kip
 
 clean:
-	$(MAKE) -f Makefile_kip clean
-	$(MAKE) -f Makefile_nro clean
+	@$(MAKE) -f Makefile_kip clean
+	@$(MAKE) -f Makefile_nro clean
 
 files := $(wildcard source/*) $(wildcard include/*)
 REBUILD := $(foreach f, $(files), $(if $(findstring __KIP__, $(shell cat $(f))), $(f))) # Gets a list of all the files that have __KIP__ in them
