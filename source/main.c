@@ -16,10 +16,16 @@ int NXSH_LOGGING_ENABLED;
 #include <nxsh.h>
 #include <switch.h>
 
+#ifdef __KIP__
+#include <sysmodule.h>
+#endif
+
 int main(int argc, char **argv) {
-    consoleInit(NULL);
     nifmInitialize();
-    socketInitializeDefault();
+    #ifndef __KIP__
+    socketInitializeDefault(); // The kip does this in __app_init(), otherwise it gets glitchy
+    consoleInit(NULL); // If the kip tries to do this it crashes
+    #endif
 
     printf("                    __  \r\n");
     printf("   ____  _  _______/ /_ \r\n");
@@ -129,7 +135,9 @@ int main(int argc, char **argv) {
     consoleUpdate(NULL);
     socketExit();
     nifmExit();
+    #ifndef __KIP__
     consoleExit(NULL);
+    #endif
 
     return 0;
 }
