@@ -52,7 +52,7 @@ int setupServerSocket(int *lissock) {
 int main(int argc, char **argv) {
     nifmInitialize();
     #ifndef __KIP__
-    socketInitializeDefault(); // The kip does this in __app_init(), otherwise it gets glitchy
+    socketInitializeDefault(); // The kip does this in __appInit(), otherwise it gets glitchy
     consoleInit(NULL); // If the kip tries to do this it crashes
     #endif
 
