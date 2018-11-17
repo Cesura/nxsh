@@ -83,6 +83,7 @@ void __appInit(void)
     rc = timeInitialize();
     if (R_FAILED(rc))
         fatalLater(rc);
+    __libnx_init_time();
     rc = socketInitializeDefault();
     if (R_FAILED(rc))
         fatalLater(rc);
