@@ -20,6 +20,35 @@ int NXSH_LOGGING_ENABLED;
 #include <sysmodule.h>
 #endif
 
+int setupServerSocket(int *lissock) {
+    struct sockaddr_in serv_addr;
+    
+    // Create socket
+    *lissock = socket(AF_INET, SOCK_STREAM, 0);
+    if (*lissock < 0) {
+        printf("Failed to initialize socket\n");
+    }
+    serv_addr.sin_family = AF_INET;
+    serv_addr.sin_addr.s_addr = INADDR_ANY;
+    serv_addr.sin_port = htons(5050);
+
+    // Reuse address
+    int yes = 1;
+    setsockopt(*lissock, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes));
+
+    // Bind to the socket
+    while (bind(*lissock, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) < 0) {
+        #ifdef __KIP__
+        svcSleepThread(1e+9L);
+        #else
+        printf("Failed to bind: error %d\n", errno);
+        break;
+        #endif
+    }
+    
+    return listen(*lissock, 5); // Listen on the apropriate address
+}
+
 int main(int argc, char **argv) {
     nifmInitialize();
     #ifndef __KIP__
@@ -37,30 +66,9 @@ int main(int argc, char **argv) {
     printf("===========================\r\n\r\n");
     consoleUpdate(NULL);
 
-    int rc;
-    struct sockaddr_in serv_addr;
+    int listenfd;
+    int rc = setupServerSocket(&listenfd);
     
-    // Create socket
-    int listenfd = socket(AF_INET, SOCK_STREAM, 0);
-    if (listenfd < 0) {
-        printf("Failed to initialize socket\n");
-    }
-    serv_addr.sin_family = AF_INET;
-    serv_addr.sin_addr.s_addr = INADDR_ANY;
-    serv_addr.sin_port = htons(5050);
-
-    // Reuse address
-    int yes = 1;
-    setsockopt(listenfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes));
-
-    // Bind to the socket
-    rc = bind(listenfd, (struct sockaddr*)&serv_addr, sizeof(serv_addr));
-    if (rc != 0) {
-        printf("Failed to bind: error %d\n", errno);
-    }
-
-    // Listen on the appropriate address
-    rc = listen(listenfd, 5);
     if (rc != 0) {
         printf("Failed to listen\n");
     }
@@ -77,6 +85,16 @@ int main(int argc, char **argv) {
         for (;;) {
 
             int connfd = accept(listenfd, (struct sockaddr*)&client_addr, &client_len);
+            
+            #ifdef __KIP__
+            if (connfd <= 0) { //Accepting fails after sleep
+                svcSleepThread(1e+9L);
+                close(listenfd);
+                setupServerSocket(&listenfd);
+                continue;
+            }
+            #endif
+            
             printf("New connection established from %s\n", inet_ntoa(client_addr.sin_addr));
             consoleUpdate(NULL);
 
