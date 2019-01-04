@@ -16,6 +16,8 @@
                     "\tpasswd - set/update/clear password\r\n" \
                     "\tlog - enable/disable logging\r\n" \
                     "\tfetch - download file from remote server\r\n" \
+                    "\tmount - mount NAND partition to drive\r\n" \
+                    "\tumount - unmount drive\r\n" \
                     "\tversion - display NXSH version\r\n" \
                     "\thelp - print this message\r\n\r\n" \
                     "\tInvoke script files by their path (./script.js)\r\n"
@@ -44,6 +46,8 @@ char *nxsh_log(int argc, char **argv);
 char *nxsh_passwd(int argc, char **argv);
 char *nxsh_fetch(int argc, char **argv, int connfd);
 char *nxsh_script(char *path, int argc, char **argv, int connfd);
+char *nxsh_mount(int argc, char **argv);
+char *nxsh_umount(int argc, char **argv);
 
 /* Behind the scenes */
 char *nxsh_cwd();
