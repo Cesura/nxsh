@@ -307,6 +307,8 @@ char *nxsh_command(int connfd, char *command, int argc, char **argv) {
     else if (strcmp(command, "log") == 0) { output = nxsh_log(argc, argv); }
     else if (strcmp(command, "passwd") == 0) { output = nxsh_passwd(argc, argv); }
     else if (strcmp(command, "fetch") == 0) { output = nxsh_fetch(argc, argv, connfd); }
+    else if (strcmp(command, "mount") == 0) { output = nxsh_mount(argc, argv); }
+    else if (strcmp(command, "umount") == 0) { output = nxsh_umount(argc, argv); }
 
     // Print working directory
     else if (strcmp(command, "pwd") == 0) {
