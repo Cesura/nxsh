@@ -158,7 +158,7 @@ $(BUILD):
 
 dist: all
 	@mkdir -p release
-	@cp $(OUTPUT).nro release
+	@cp $(TARGET).nro release
 
 #---------------------------------------------------------------------------------
 clean:

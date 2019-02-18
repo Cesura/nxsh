@@ -10,9 +10,6 @@ sys:
 	@$(MAKE) rebuild
 	@$(MAKE) -f Makefile_sys
 
-# Title ID for the sysmodule
-TITLE_ID := 43000000000000ff
-
 dist:
 	@$(MAKE) rebuild
 	@$(MAKE) -f Makefile_nro dist
