@@ -1,4 +1,4 @@
-#ifdef __KIP__
+#ifdef __SYS__
 #include <sysmodule.h>
 
 // we aren't an applet
@@ -48,35 +48,15 @@ void fatalLater(Result err)
     svcCloseHandle(srv);
 }
 
-void registerFspLr()
-{
-    if (kernelAbove400())
-        return;
-
-    Result rc = fsprInitialize();
-    if (R_FAILED(rc))
-        fatalLater(rc);
-
-    u64 pid;
-    svcGetProcessId(&pid, CUR_PROCESS_HANDLE);
-
-    rc = fsprRegisterProgram(pid, TITLE_ID, FsStorageId_NandSystem, NULL, 0, NULL, 0);
-    if (R_FAILED(rc))
-        fatalLater(rc);
-    fsprExit();
-}
-
 void __appInit(void)
 {
     Result rc;
-    svcSleepThread(10000000000L);
     rc = smInitialize();
     if (R_FAILED(rc))
         fatalLater(rc);
     rc = fsInitialize();
     if (R_FAILED(rc))
         fatalLater(rc);
-    registerFspLr();
     rc = fsdevMountSdmc();
     if (R_FAILED(rc))
         fatalLater(rc);

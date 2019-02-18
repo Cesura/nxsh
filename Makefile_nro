@@ -156,6 +156,10 @@ $(BUILD):
 	@[ -d $@ ] || mkdir -p $@
 	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile_nro
 
+dist: all
+	@mkdir -p release
+	@cp $(OUTPUT).nro release
+
 #---------------------------------------------------------------------------------
 clean:
 	@echo clean ...

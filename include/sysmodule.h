@@ -1,4 +1,4 @@
-#ifdef __KIP__
+#ifdef __SYS__
 #include <switch.h>
 
 #define TITLE_ID 0x43000000000000FF // This should be a purposeful number
@@ -12,8 +12,6 @@ void __libnx_initheap(void);
 void __libnx_init_time(void);
 
 void fatalLater(Result err);
-
-void registerFspLr();
 
 void __appInit(void);
 

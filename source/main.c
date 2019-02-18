@@ -16,7 +16,7 @@ int NXSH_LOGGING_ENABLED;
 #include <nxsh.h>
 #include <switch.h>
 
-#ifdef __KIP__
+#ifdef __SYS__
 #include <sysmodule.h>
 #endif
 
@@ -38,7 +38,7 @@ int setupServerSocket(int *lissock) {
 
     // Bind to the socket
     while (bind(*lissock, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) < 0) {
-        #ifdef __KIP__
+        #ifdef __SYS__
         svcSleepThread(1e+9L);
         #else
         printf("Failed to bind: error %d\n", errno);
@@ -51,9 +51,9 @@ int setupServerSocket(int *lissock) {
 
 int main(int argc, char **argv) {
     nifmInitialize();
-    #ifndef __KIP__
-    socketInitializeDefault(); // The kip does this in __appInit(), otherwise it gets glitchy
-    consoleInit(NULL); // If the kip tries to do this it crashes
+    #ifndef __SYS__
+    socketInitializeDefault(); // The sysmodule does this in __appInit(), otherwise it gets glitchy
+    consoleInit(NULL); // If the sysmodule tries to do this it crashes
     #endif
 
     printf("                    __  \r\n");
@@ -86,7 +86,7 @@ int main(int argc, char **argv) {
 
             int connfd = accept(listenfd, (struct sockaddr*)&client_addr, &client_len);
             
-            #ifdef __KIP__
+            #ifdef __SYS__
             if (connfd <= 0) { //Accepting fails after sleep
                 svcSleepThread(1e+9L);
                 close(listenfd);
@@ -153,7 +153,7 @@ int main(int argc, char **argv) {
     consoleUpdate(NULL);
     socketExit();
     nifmExit();
-    #ifndef __KIP__
+    #ifndef __SYS__
     consoleExit(NULL);
     #endif
 
