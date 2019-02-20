@@ -18,13 +18,15 @@
                     "\tfetch - download file from remote server\r\n" \
                     "\tmount - mount NAND partition to drive\r\n" \
                     "\tumount - unmount drive\r\n" \
+                    "\treboot - reboots the console\r\n" \
+                    "\tshutdown - turns off the console\r\n" \
                     "\tversion - display NXSH version\r\n" \
                     "\thelp - print this message\r\n\r\n" \
                     "\tInvoke script files by their path (./script.js)\r\n"
 
 #define NXSH_DIR "/nxsh"
 
-#define NXSH_VERSION "0.1.7 beta"
+#define NXSH_VERSION "0.1.8 beta"
 
 extern int NXSH_LOGGING_ENABLED;
 extern int NXSH_FD_LOCK;
@@ -48,6 +50,8 @@ char *nxsh_fetch(int argc, char **argv, int connfd);
 char *nxsh_script(char *path, int argc, char **argv, int connfd);
 char *nxsh_mount(int argc, char **argv);
 char *nxsh_umount(int argc, char **argv);
+char *nxsh_reboot(int argc, char **argv, int connfd);
+char *nxsh_shutdown(int connfd);
 
 /* Behind the scenes */
 char *nxsh_cwd();

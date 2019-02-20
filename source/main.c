@@ -87,7 +87,7 @@ int main(int argc, char **argv) {
             int connfd = accept(listenfd, (struct sockaddr*)&client_addr, &client_len);
             
             #ifdef __SYS__
-            if (connfd <= 0) { //Accepting fails after sleep
+            if (connfd <= 0) { // Accepting fails after sleep
                 svcSleepThread(1e+9L);
                 close(listenfd);
                 setupServerSocket(&listenfd);
@@ -309,6 +309,8 @@ char *nxsh_command(int connfd, char *command, int argc, char **argv) {
     else if (strcmp(command, "fetch") == 0) { output = nxsh_fetch(argc, argv, connfd); }
     else if (strcmp(command, "mount") == 0) { output = nxsh_mount(argc, argv); }
     else if (strcmp(command, "umount") == 0) { output = nxsh_umount(argc, argv); }
+    else if (strcmp(command, "reboot") == 0) { output = nxsh_reboot(argc, argv, connfd); }
+    else if (strcmp(command, "shutdown") == 0) { output = nxsh_shutdown(connfd); }
 
     // Print working directory
     else if (strcmp(command, "pwd") == 0) {
