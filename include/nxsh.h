@@ -20,6 +20,8 @@
                     "\tumount - unmount drive\r\n" \
                     "\treboot - reboots the console\r\n" \
                     "\tshutdown - turns off the console\r\n" \
+                    "\techo - echo the arguments\r\n" \
+                    "\ttouch - Create file or update modification date of a file\r\n" \
                     "\tversion - display NXSH version\r\n" \
                     "\thelp - print this message\r\n\r\n" \
                     "\tInvoke script files by their path (./script.js)\r\n"
@@ -52,6 +54,8 @@ char *nxsh_mount(int argc, char **argv);
 char *nxsh_umount(int argc, char **argv);
 char *nxsh_reboot(int argc, char **argv, int connfd);
 char *nxsh_shutdown(int connfd);
+char *nxsh_echo(int argc, char **argv);
+char *nxsh_touch(int argc, char **argv);
 
 /* Behind the scenes */
 char *nxsh_cwd();

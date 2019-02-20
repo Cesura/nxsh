@@ -174,10 +174,6 @@ void nxsh_session(int connfd) {
     size_t argc;
     char *prompt;
 
-    prompt = nxsh_prompt();
-    send(connfd, prompt, strlen(prompt)+1, 0);
-    free(prompt);
-
     // Check if logging is enabled
     if (logging_enabled())
         NXSH_LOGGING_ENABLED = 1;
@@ -185,6 +181,10 @@ void nxsh_session(int connfd) {
         NXSH_LOGGING_ENABLED = 0;
 
     for (;;) {
+        prompt = nxsh_prompt();
+        send(connfd, prompt, strlen(prompt)+1, 0);
+        free(prompt);
+        
         len = recv(connfd, recv_buf, 1024, 0);
 
         // Error occurred on socket receive
@@ -218,6 +218,22 @@ void nxsh_session(int connfd) {
                 strcpy(prev_command, recv_buf);
             }
 
+            char *output_write_type = "0";
+            char *separator;
+            char filepath[PATH_MAX];
+            if (strstr(recv_buf, ">>")) {
+                output_write_type = "a";
+                separator = ">>";
+            } else if (strstr(recv_buf, ">") != NULL) {
+                output_write_type = "w";
+                separator = ">";
+            }
+            if (strcmp(output_write_type, "0") != 0) {
+                strtok(recv_buf, separator);
+                strcpy(filepath, strtok(NULL, separator));
+                trim(filepath);
+            }
+
             // Command passed with arguments
             if (strstr(recv_buf, " ") != NULL) {
                 char *cmd = strtok(recv_buf, " ");
@@ -248,13 +264,15 @@ void nxsh_session(int connfd) {
 
                 char *output = nxsh_command(connfd, command_buf, argc, argv);
 
-                // Exit the session
-                if (output != NULL && strcmp(output, "_nxsh_exit") == 0) {
+                if (strcmp(output_write_type, "0") != 0) {
+                    FILE *fp = fopen(filepath, output_write_type);
+                    fprintf(fp, output);
+                    fclose(fp);
+                } else if (output != NULL && strcmp(output, "_nxsh_exit") == 0) { // Exit the session
                     close(connfd);
                     free(output);
                     break;
-                }
-                else {
+                } else {
 
                     // Send the response to the client
                     if (output != NULL) {
@@ -265,10 +283,6 @@ void nxsh_session(int connfd) {
 
                         free(output);
                     }
-
-                    prompt = nxsh_prompt();
-                    send(connfd, prompt, strlen(prompt)+1, 0);
-                    free(prompt);
                 }
             }
 
@@ -311,6 +325,8 @@ char *nxsh_command(int connfd, char *command, int argc, char **argv) {
     else if (strcmp(command, "umount") == 0) { output = nxsh_umount(argc, argv); }
     else if (strcmp(command, "reboot") == 0) { output = nxsh_reboot(argc, argv, connfd); }
     else if (strcmp(command, "shutdown") == 0) { output = nxsh_shutdown(connfd); }
+    else if (strcmp(command, "echo") == 0) { output = nxsh_echo(argc, argv); }
+    else if (strcmp(command, "touch") == 0) { output = nxsh_touch(argc, argv); }
 
     // Print working directory
     else if (strcmp(command, "pwd") == 0) {

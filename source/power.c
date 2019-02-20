@@ -4,7 +4,7 @@
 #include <switch.h>
 #include <nxsh.h>
 
-char *nxsh_reboot(int argc, char **argv, int connfd){
+char *nxsh_reboot(int argc, char **argv, int connfd) {
     if (argc == 0) {
         close(connfd);
         fsdevUnmountAll();
@@ -23,7 +23,7 @@ char *nxsh_reboot(int argc, char **argv, int connfd){
     return "";
 }
 
-char *nxsh_shutdown(int connfd){
+char *nxsh_shutdown(int connfd) {
     close(connfd);
     svcSleepThread(1e+8L);
     bpcInitialize();
