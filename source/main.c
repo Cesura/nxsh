@@ -30,7 +30,7 @@ int setupServerSocket(int *lissock) {
     }
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_addr.s_addr = INADDR_ANY;
-    serv_addr.sin_port = htons(5050);
+    serv_addr.sin_port = htons(23);
 
     // Reuse address
     int yes = 1;
@@ -75,7 +75,7 @@ int main(int argc, char **argv) {
     else {
         char hostname[128];
         gethostname(hostname, sizeof(hostname));
-        printf("Listening on %s:%d...\n", hostname, 5050);
+        printf("Listening on %s:%d...\n", hostname, 23);
         consoleUpdate(NULL);
 
         struct sockaddr_in client_addr;
