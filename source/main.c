@@ -12,7 +12,6 @@
 int NXSH_LOGGING_ENABLED;
 #define NXSH_PASSWORD_PROMPT "Enter password: "
 #define NXSH_PASSWORD_ERROR "\r\nIncorrect password entered\r\n"
-#define NXSH_PORT 23
 
 #include <nxsh.h>
 #include <switch.h>
