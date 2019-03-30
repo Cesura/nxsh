@@ -12,6 +12,7 @@
 int NXSH_LOGGING_ENABLED;
 #define NXSH_PASSWORD_PROMPT "Enter password: "
 #define NXSH_PASSWORD_ERROR "\r\nIncorrect password entered\r\n"
+#define NXSH_PORT 23
 
 #include <nxsh.h>
 #include <switch.h>
@@ -30,7 +31,7 @@ int setupServerSocket(int *lissock) {
     }
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_addr.s_addr = INADDR_ANY;
-    serv_addr.sin_port = htons(23);
+    serv_addr.sin_port = htons(NXSH_PORT);
 
     // Reuse address
     int yes = 1;
@@ -75,7 +76,7 @@ int main(int argc, char **argv) {
     else {
         char hostname[128];
         gethostname(hostname, sizeof(hostname));
-        printf("Listening on %s:%d...\n", hostname, 23);
+        printf("Listening on %s:%d...\n", hostname, NXSH_PORT);
         consoleUpdate(NULL);
 
         struct sockaddr_in client_addr;
