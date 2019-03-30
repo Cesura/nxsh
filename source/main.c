@@ -181,7 +181,7 @@ void nxsh_session(int connfd) {
     else
         NXSH_LOGGING_ENABLED = 0;
 
-	for (;;) {
+    for (;;) {
         if (recv_buf[0] != 0xFF) {
     	    prompt = nxsh_prompt();
     	    send(connfd, prompt, strlen(prompt)+1, 0);
