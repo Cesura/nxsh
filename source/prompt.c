@@ -10,7 +10,7 @@
     @returns - pointer to buffer with prompt string
 */
 char *nxsh_prompt() {
-    char *prompt;
+	char *prompt;
     char *cwd = strip_prefix(nxsh_cwd());
     char *user = "root";
     char *host = "switch";

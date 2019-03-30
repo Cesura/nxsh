@@ -30,7 +30,7 @@ int setupServerSocket(int *lissock) {
     }
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_addr.s_addr = INADDR_ANY;
-    serv_addr.sin_port = htons(NXSH_PORT);
+    serv_addr.sin_port = htons(5050);
 
     // Reuse address
     int yes = 1;
@@ -75,7 +75,7 @@ int main(int argc, char **argv) {
     else {
         char hostname[128];
         gethostname(hostname, sizeof(hostname));
-        printf("Listening on %s:%d...\n", hostname, NXSH_PORT);
+        printf("Listening on %s:%d...\n", hostname, 5050);
         consoleUpdate(NULL);
 
         struct sockaddr_in client_addr;
@@ -167,7 +167,6 @@ int main(int argc, char **argv) {
 void nxsh_session(int connfd) {
 
     char *recv_buf = malloc(sizeof(char) * 1024);
-    memset(recv_buf, 0, sizeof(char) * 1024);
     size_t len;
     char *tok, *command_buf;
     char *prev_command = malloc(sizeof(char) * 128);
@@ -182,12 +181,10 @@ void nxsh_session(int connfd) {
         NXSH_LOGGING_ENABLED = 0;
 
     for (;;) {
-        if (recv_buf[0] != 0xFF) {
-            prompt = nxsh_prompt();
-            send(connfd, prompt, strlen(prompt)+1, 0);
-            free(prompt);
-        }    
-
+        prompt = nxsh_prompt();
+        send(connfd, prompt, strlen(prompt)+1, 0);
+        free(prompt);
+        
         len = recv(connfd, recv_buf, 1024, 0);
 
         // Error occurred on socket receive
@@ -196,7 +193,6 @@ void nxsh_session(int connfd) {
             break;
         }
         else {
-            if (recv_buf[0] == 0xFF) continue;
             
             // Strip the newline character, if it exists
             if (recv_buf[len-1] == '\n')
