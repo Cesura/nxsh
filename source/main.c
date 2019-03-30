@@ -183,10 +183,10 @@ void nxsh_session(int connfd) {
 
     for (;;) {
         if (recv_buf[0] != 0xFF) {
-    	    prompt = nxsh_prompt();
-    	    send(connfd, prompt, strlen(prompt)+1, 0);
-    	    free(prompt);
-    	}    
+            prompt = nxsh_prompt();
+            send(connfd, prompt, strlen(prompt)+1, 0);
+            free(prompt);
+        }    
 
         len = recv(connfd, recv_buf, 1024, 0);
 

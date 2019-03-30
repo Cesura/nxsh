@@ -73,9 +73,9 @@ int is_dir_empty(char *dir) {
     @returns - 1 if file, 0 if not
 */
 int is_file(char *name) {
-	struct stat buf;
-	stat(name, &buf);
-	return S_ISREG(buf.st_mode);
+    struct stat buf;
+    stat(name, &buf);
+    return S_ISREG(buf.st_mode);
 }
 
 /*
@@ -85,9 +85,9 @@ int is_file(char *name) {
     @returns - 1 if it does, 0 if not
 */
 int exists(char *name) {
-	if (access(name, F_OK) == -1)
-		return 0;
-	return 1;
+    if (access(name, F_OK) == -1)
+        return 0;
+    return 1;
 }
 
 
@@ -114,11 +114,11 @@ char *filename(char *path) {
 }
 
 /*
-	Strip the SD card prefix from the path
-	@param inpath - unstripped path
+    Strip the SD card prefix from the path
+    @param inpath - unstripped path
 
-	@returns - either the input string (if no prefix present), or
-				a pointer to the stripped version
+    @returns - either the input string (if no prefix present), or
+                a pointer to the stripped version
 */
 char *strip_prefix(char *inpath) {
     if (strlen(inpath) < 5)
