@@ -5,27 +5,6 @@
 #include <sys/stat.h>
 
 #include <nxsh.h>
-#include <md5.h>
-
-/*
-    Get the md5 hash of a string
-    @param input - input string
-
-    @returns malloc'd pointer to the hash
-*/
-char *md5_hash(char *input) {
-    MD5_CTX ctx;
-    MD5_Init(&ctx);
-    MD5_Update(&ctx, input, 6);
-    unsigned char digest[16];
-    MD5_Final(digest, &ctx);
-
-    char *md5 = malloc(sizeof(char) * 33);
-    for (int i = 0; i < 16; ++i)
-        sprintf(&md5[i*2], "%02x", (unsigned int)digest[i]);
-
-    return md5;
-}
 
 /*
     Authenticate the user with the given password
@@ -48,7 +27,7 @@ int nxsh_authenticate(char *password) {
         if (fp) {
             // Get a hash of the passed password, and the system password 
             char *sys_pw = malloc(sizeof(char) * 33);
-            char *user_pw = md5_hash(password);
+            char *user_pw = md5_hash(password, strlen(password));
             fread(sys_pw, sizeof(char), 32, fp);
             fclose(fp);
 
@@ -102,7 +81,7 @@ char *nxsh_passwd(int argc, char **argv) {
         // Set the new password
         FILE *fp = fopen(pw_file, "w+");
         if (fp) {
-            char *hashed_pw = md5_hash(argv[1]);
+            char *hashed_pw = md5_hash(argv[1], strlen(argv[1]));
             fwrite(hashed_pw, sizeof(char), 32, fp);
             free(hashed_pw);
             fclose(fp);

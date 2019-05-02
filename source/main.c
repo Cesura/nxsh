@@ -331,6 +331,9 @@ char *nxsh_command(int connfd, char *command, int argc, char **argv) {
     else if (strcmp(command, "shutdown") == 0) { output = nxsh_shutdown(connfd); }
     else if (strcmp(command, "echo") == 0) { output = nxsh_echo(argc, argv); }
     else if (strcmp(command, "touch") == 0) { output = nxsh_touch(argc, argv); }
+    else if (strcmp(command, "md5sum") == 0) { output = nxsh_hash(argc, argv, "md5"); }
+    else if (strcmp(command, "sha1sum") == 0) { output = nxsh_hash(argc, argv, "sha1"); }
+    else if (strcmp(command, "sha256sum") == 0) { output = nxsh_hash(argc, argv, "sha256"); }
 
     // Print working directory
     else if (strcmp(command, "pwd") == 0) {

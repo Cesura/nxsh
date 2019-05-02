@@ -58,6 +58,7 @@ char *nxsh_reboot(int argc, char **argv, int connfd);
 char *nxsh_shutdown(int connfd);
 char *nxsh_echo(int argc, char **argv);
 char *nxsh_touch(int argc, char **argv);
+char *nxsh_hash(int argc, char **argv, const char *type);
 
 /* Behind the scenes */
 char *nxsh_cwd();
@@ -78,5 +79,6 @@ int is_dir_empty(char *dir);
 int exists(char *name);
 char *filename(char *fullpath);
 char *strip_prefix(char *inpath);
+char *md5_hash(void *input, size_t size);
 
 #endif

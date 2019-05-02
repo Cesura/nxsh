@@ -6,8 +6,10 @@
 #include <unistd.h>
 #include <errno.h>
 #include <sys/stat.h>
+#include <stdio.h>
 
 #include <nxsh.h>
+#include <md5.h>
  
 /*
     Trim whitespace from head and tail
@@ -140,4 +142,24 @@ char *strip_prefix(char *inpath) {
         free(test);
         return inpath;
     }
+}
+
+/*
+    Get the md5 hash of a string
+    @param input - input string
+
+    @returns malloc'd pointer to the hash
+*/
+char *md5_hash(void *input, size_t size) {
+    MD5_CTX ctx;
+    MD5_Init(&ctx);
+    MD5_Update(&ctx, input, size);
+    unsigned char digest[16];
+    MD5_Final(digest, &ctx);
+
+    char *md5 = malloc(sizeof(char) * 33);
+    for (int i = 0; i < 16; ++i)
+        sprintf(&md5[i*2], "%02x", (unsigned int)digest[i]);
+
+    return md5;
 }
