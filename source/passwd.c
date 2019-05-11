@@ -5,6 +5,7 @@
 #include <sys/stat.h>
 
 #include <nxsh.h>
+#include <switch.h>
 
 /*
     Authenticate the user with the given password
@@ -26,12 +27,12 @@ int nxsh_authenticate(char *password) {
         
         if (fp) {
             // Get a hash of the passed password, and the system password 
-            char *sys_pw = malloc(sizeof(char) * 33);
-            char *user_pw = md5_hash(password, strlen(password));
-            fread(sys_pw, sizeof(char), 32, fp);
+            char *sys_pw = malloc(sizeof(char) * (SHA256_HASH_SIZE * 2 + 1));
+            char *user_pw = hash(password, strlen(password), "sha256");
+            fread(sys_pw, sizeof(char), SHA256_HASH_SIZE * 2, fp);
             fclose(fp);
 
-            sys_pw[32] = '\0';
+            sys_pw[SHA256_HASH_SIZE * 2] = '\0';
 
             // Compare the passwords
             if (strcmp(user_pw, sys_pw) == 0) {
@@ -81,14 +82,15 @@ char *nxsh_passwd(int argc, char **argv) {
         // Set the new password
         FILE *fp = fopen(pw_file, "w+");
         if (fp) {
-            char *hashed_pw = md5_hash(argv[1], strlen(argv[1]));
-            fwrite(hashed_pw, sizeof(char), 32, fp);
+            char *hashed_pw = hash(argv[1], strlen(argv[1]), "sha256");
+            fwrite(hashed_pw, sizeof(char), SHA256_HASH_SIZE * 2, fp);
             free(hashed_pw);
             fclose(fp);
             free(pw_file);
             return error("Password set successfully. You will be prompted for it upon next login.\r\n");
         }
         else {
+            free(pw_file);
             return error("Error: could not open password file\r\n");
         }
     }

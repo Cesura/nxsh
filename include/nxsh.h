@@ -21,7 +21,11 @@
                     "\treboot - reboots the console\r\n" \
                     "\tshutdown - turns off the console\r\n" \
                     "\techo - echo the arguments\r\n" \
-                    "\ttouch - Create file or update modification date of a file\r\n" \
+                    "\ttouch - create file or update modification date of a file\r\n" \
+                    "\tmd5sum - get the md5 hash of a file\r\n" \
+                    "\tsha1sum - get the sha1 hash of a file\r\n" \
+                    "\tsha256sum - get the sha256 hash of a file\r\n" \
+                    "\tpm - interact with the PM sysmodule\r\n" \
                     "\tversion - display NXSH version\r\n" \
                     "\thelp - print this message\r\n\r\n" \
                     "\tInvoke script files by their path (./script.js)\r\n"
@@ -59,6 +63,7 @@ char *nxsh_shutdown(int connfd);
 char *nxsh_echo(int argc, char **argv);
 char *nxsh_touch(int argc, char **argv);
 char *nxsh_hash(int argc, char **argv, const char *type);
+char *nxsh_pm(int argc, char **argv);
 
 /* Behind the scenes */
 char *nxsh_cwd();
@@ -79,6 +84,6 @@ int is_dir_empty(char *dir);
 int exists(char *name);
 char *filename(char *fullpath);
 char *strip_prefix(char *inpath);
-char *md5_hash(void *input, size_t size);
+char *hash(void *input, size_t size, const char *type);
 
 #endif

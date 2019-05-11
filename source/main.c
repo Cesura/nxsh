@@ -334,6 +334,7 @@ char *nxsh_command(int connfd, char *command, int argc, char **argv) {
     else if (strcmp(command, "md5sum") == 0) { output = nxsh_hash(argc, argv, "md5"); }
     else if (strcmp(command, "sha1sum") == 0) { output = nxsh_hash(argc, argv, "sha1"); }
     else if (strcmp(command, "sha256sum") == 0) { output = nxsh_hash(argc, argv, "sha256"); }
+    else if (strcmp(command, "pm") == 0) { output = nxsh_pm(argc,argv); }
 
     // Print working directory
     else if (strcmp(command, "pwd") == 0) {

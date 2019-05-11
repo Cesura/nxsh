@@ -1,0 +1,9 @@
+build/*
+release/*
+*.elf
+*.nro
+*.pfs0
+*.nacp
+*.nso
+*.nsp
+*.npdm

@@ -9,6 +9,7 @@
 #include <stdio.h>
 
 #include <nxsh.h>
+#include <switch.h>
 #include <md5.h>
  
 /*
@@ -144,22 +145,43 @@ char *strip_prefix(char *inpath) {
     }
 }
 
-/*
-    Get the md5 hash of a string
-    @param input - input string
+char *hash(void *input, size_t size, const char *type) {
+    char *hash_str = malloc(1);
+    hash_str[0] = '\0';
 
-    @returns malloc'd pointer to the hash
-*/
-char *md5_hash(void *input, size_t size) {
-    MD5_CTX ctx;
-    MD5_Init(&ctx);
-    MD5_Update(&ctx, input, size);
-    unsigned char digest[16];
-    MD5_Final(digest, &ctx);
+    if (strcmp(type, "md5") == 0) {
+        MD5_CTX ctx;
+        MD5_Init(&ctx);
+        MD5_Update(&ctx, input, size);
+        unsigned char digest[16];
+        MD5_Final(digest, &ctx);
 
-    char *md5 = malloc(sizeof(char) * 33);
-    for (int i = 0; i < 16; ++i)
-        sprintf(&md5[i*2], "%02x", (unsigned int)digest[i]);
+        hash_str = malloc(sizeof(char) * 33);
+        for (int i = 0; i < 16; ++i)
+            sprintf(&hash_str[i*2], "%02x", (unsigned int)digest[i]);
 
-    return md5;
+        hash_str[32] = '\0';
+    } else if (strcmp(type, "sha1") == 0) {
+        u8 hash_bytes[SHA1_HASH_SIZE];
+        hash_str = malloc(sizeof(char) * (SHA1_HASH_SIZE * 2 + 1));
+
+        sha1CalculateHash(hash_bytes, input, size);
+
+        for (int i=0; i<sizeof(hash_bytes); i++)
+            sprintf(hash_str + i * 2, "%02x", hash_bytes[i]);
+
+        hash_str[SHA1_HASH_SIZE * 2] = '\0';
+    } else if (strcmp(type, "sha256") == 0) {
+        u8 hash_bytes[SHA256_HASH_SIZE];
+        hash_str = malloc(sizeof(char) * (SHA256_HASH_SIZE * 2 + 1));
+
+        sha256CalculateHash(hash_bytes, input, size);
+
+        for (int i=0; i<sizeof(hash_bytes); i++)
+            sprintf(hash_str + i * 2, "%02x", hash_bytes[i]);
+
+        hash_str[SHA256_HASH_SIZE * 2] = '\0';
+    }
+
+    return hash_str;
 }
