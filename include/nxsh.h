@@ -1,5 +1,7 @@
 #include <stdlib.h>
 
+#include <switch.h>
+
 #ifndef NXSH_H
 #define NXSH_H
 
@@ -16,8 +18,9 @@
                     "\tpasswd - set/update/clear password\r\n" \
                     "\tlog - enable/disable logging\r\n" \
                     "\tfetch - download file from remote server\r\n" \
-                    "\tmount - mount NAND partition to drive\r\n" \
-                    "\tumount - unmount drive\r\n" \
+                    "\tmount - mount a filesystem to a device\r\n" \
+                    "\tumount - unmount device\r\n" \
+                    "\tcommit-dev - commit changes to a device\r\n" \
                     "\treboot - reboots the console\r\n" \
                     "\tshutdown - turns off the console\r\n" \
                     "\techo - echo the arguments\r\n" \
@@ -26,6 +29,7 @@
                     "\tsha1sum - get the sha1 hash of a file\r\n" \
                     "\tsha256sum - get the sha256 hash of a file\r\n" \
                     "\tpm - interact with the PM sysmodule\r\n" \
+                    "\tacc - interact with accounts\r\n" \
                     "\tversion - display NXSH version\r\n" \
                     "\thelp - print this message\r\n\r\n" \
                     "\tInvoke script files by their path (./script.js)\r\n"
@@ -64,6 +68,8 @@ char *nxsh_echo(int argc, char **argv);
 char *nxsh_touch(int argc, char **argv);
 char *nxsh_hash(int argc, char **argv, const char *type);
 char *nxsh_pm(int argc, char **argv);
+char *nxsh_acc(int argc, char **argv);
+char *nxsh_commit_dev(int argc, char **argv);
 
 /* Behind the scenes */
 char *nxsh_cwd();
@@ -85,5 +91,6 @@ int exists(char *name);
 char *filename(char *fullpath);
 char *strip_prefix(char *inpath);
 char *hash(void *input, size_t size, const char *type);
+char *format_u128_hex(u128 num);
 
 #endif
