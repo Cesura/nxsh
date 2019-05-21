@@ -337,6 +337,7 @@ char *nxsh_command(int connfd, char *command, int argc, char **argv) {
     else if (strcmp(command, "pm") == 0) { output = nxsh_pm(argc,argv); }
     else if (strcmp(command, "acc") == 0) { output = nxsh_acc(argc, argv); }
     else if (strcmp(command, "commit-dev") == 0) { output = nxsh_commit_dev(argc, argv); }
+    else if (strcmp(command, "realpath") == 0) { output = nxsh_realpath(argc, argv); }
 
     // Print working directory
     else if (strcmp(command, "pwd") == 0) {

@@ -1,6 +1,8 @@
 #ifdef __SYS__
 #include <sysmodule.h>
 
+#include <unistd.h>
+
 // we aren't an applet
 u32 __nx_applet_type = AppletType_None;
 
@@ -27,6 +29,12 @@ void __appInit(void)
     rc = fsdevMountSdmc();
     if (R_FAILED(rc))
         fatalSimple(rc);
+
+    /* The NRO begins in a folder under sdmc:/,
+    so for consistency make the sysmodule change
+    its directory to sdmc:/ instead of / */
+    chdir("sdmc:/");
+
     rc = timeInitialize();
     if (R_FAILED(rc))
         fatalSimple(rc);
@@ -38,11 +46,10 @@ void __appInit(void)
 
 void __appExit(void)
 {
+    socketExit();
     fsdevUnmountAll();
+    timeExit();
     fsExit();
     smExit();
-    audoutExit();
-    timeExit();
-    socketExit();
 }
 #endif

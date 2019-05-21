@@ -30,6 +30,7 @@
                     "\tsha256sum - get the sha256 hash of a file\r\n" \
                     "\tpm - interact with the PM sysmodule\r\n" \
                     "\tacc - interact with accounts\r\n" \
+                    "\trealpath - resolve the absolute path\r\n" \
                     "\tversion - display NXSH version\r\n" \
                     "\thelp - print this message\r\n\r\n" \
                     "\tInvoke script files by their path (./script.js)\r\n"
@@ -70,6 +71,7 @@ char *nxsh_hash(int argc, char **argv, const char *type);
 char *nxsh_pm(int argc, char **argv);
 char *nxsh_acc(int argc, char **argv);
 char *nxsh_commit_dev(int argc, char **argv);
+char *nxsh_realpath(int argc, char **argv);
 
 /* Behind the scenes */
 char *nxsh_cwd();
