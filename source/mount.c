@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <limits.h>
+#include <unistd.h>
 
 #include <switch.h>
 #include <nxsh.h>
@@ -12,15 +13,61 @@
                     "\t--game-save\tMount game save\r\n" \
                     "\t--system-save\tMount system save\r\n" \
                     "\t--pfs0\tMount PFS0\r\n" \
-                    "\t--sd-card\tMount SD card\r\n"
+                    "\t--sd-card\tMount SD card\r\n" \
+                    "\t--gamecard\tMount gamecard\r\n"
 
 #define MOUNT_BIS_SUCCESS "Mounted partition %s to \"%s\" successfully\r\n"
 #define MOUNT_SYS_SUCCESS "Mounted system save %s to \"%s\" successfully\r\n"
 #define MOUNT_GAME_SUCCESS "Mounted game save from user %s and game %s to \"%s\" successfully\r\n"
 #define MOUNT_PFS0_SUCCESS "Mounted PFS0 %s to \"%s\" successfully\r\n"
 #define MOUNT_SD_SUCCESS "Mounted SD card to \"%s\" successfully\r\n"
+#define MOUNT_GC_SUCCESS "Mounted gamecard partiton %s to \"%s\" successfully\r\n"
 
 #define UMOUNT_SUCCESS "Unmounted \"%s\" successfully\r\n"
+#define UMOUNT_FAIL "Unmounting \"%s\" failed\r\n"
+
+#define COMMIT_FAIL "Commiting \"%s\" failed\r\n"
+
+Result fsOpenGameCardFileSystem(FsFileSystem *out, FsGameCardHandle handle, u32 partition) {
+    IpcCommand c;
+    ipcInitialize(&c);
+
+    struct {
+        u64 magic;
+        u64 cmd_id;
+        u32 handle;
+        u32 partition;
+    } *raw;
+
+    raw = serviceIpcPrepareHeader(fsGetServiceSession(), &c, sizeof(*raw));
+
+    raw->magic = SFCI_MAGIC;
+    raw->cmd_id = 31;
+    raw->handle = handle.value;
+    raw->partition = partition;
+
+    Result rc = serviceIpcDispatch(fsGetServiceSession());
+
+    if (R_SUCCEEDED(rc)) {
+        IpcParsedCommand r;
+        struct {
+            u64 magic;
+            u64 result;
+        } *resp;
+
+        serviceIpcParse(fsGetServiceSession(), &r, sizeof(*resp));
+
+        resp = r.Raw;
+
+        rc = resp->result;
+
+        if (R_SUCCEEDED(rc)) {
+            serviceCreateSubservice(&out->s, fsGetServiceSession(), &r, 0);
+        }
+    }
+
+    return rc;
+}
 
 char *nxsh_mount(int argc, char **argv) {
     if (argc < 1)
@@ -133,6 +180,34 @@ char *nxsh_mount(int argc, char **argv) {
         success = malloc(sizeof(char) * (sizeof(MOUNT_SD_SUCCESS) - 2 + strlen(device)));
         success[0] = '\0';
         sprintf(success, MOUNT_SD_SUCCESS, device);
+    } else if (strcmp(argv[0], "--gamecard") == 0) {
+        if (argc < 3)
+            return error("Usage: mount --gamecard <partition id> <device>\r\n");
+
+        FsDeviceOperator op;
+        if (R_FAILED(fsOpenDeviceOperator(&op)))
+            return error("Opening device operator failed\r\n");
+
+        bool gc_inserted = 0;
+        if (R_FAILED(fsDeviceOperatorIsGameCardInserted(&op, &gc_inserted)))
+            return error("Detecting whether the gamecard is inserted failed\r\n");
+
+        if (!gc_inserted)
+            return error("Gamecard must be inserted\r\n");
+
+        FsGameCardHandle gc_handle;
+        if (R_FAILED(fsDeviceOperatorGetGameCardHandle(&op, &gc_handle)))
+            return error("Getting gamecard handle failed\r\n");
+
+        if (R_FAILED(fsOpenGameCardFileSystem(&dev, gc_handle, atoi(argv[1]))))
+            return error("Opening filesytem failed\r\n");
+
+        if (fsdevMountDevice(argv[2], dev) == -1)
+            return error("Mounting failed\r\n");
+
+        success = malloc(sizeof(char) * (sizeof(MOUNT_GC_SUCCESS) - 4 + strlen(argv[1]) + strlen(argv[2])));
+        success[0] = '\0';
+        sprintf(success, MOUNT_GC_SUCCESS, argv[1], argv[2]);
     } else {
         return error(MOUNT_USAGE);
     }
@@ -143,26 +218,54 @@ char *nxsh_mount(int argc, char **argv) {
 char *nxsh_umount(int argc, char **argv) {
     if (argc < 1)
         return error("Usage: umount <device>\r\n");
-    if (R_FAILED(fsdevCommitDevice(argv[0])))
-        return error("Committing failed\r\n");
-    if (fsdevUnmountDevice(argv[0]) == -1)
-        return error("Unmounting failed\r\n");
-    char *success = malloc(sizeof(char) * (strlen(UMOUNT_SUCCESS) - 2 + strlen(argv[0])));
-    sprintf(success, UMOUNT_SUCCESS, argv[0]);
-    return success;
+
+    char *out = malloc(1);
+    out[0] = '\0';
+
+    for (int i=0; i<argc; i++) {
+        if (R_FAILED(fsdevCommitDevice(argv[i]))) {
+            char error[sizeof(COMMIT_FAIL) - 2 + strlen(argv[i])];
+            sprintf(error, COMMIT_FAIL, argv[i]);
+            out = realloc(out, strlen(out) + strlen(error) + 1);
+            strcat(out, error);
+        }
+
+        if (fsdevUnmountDevice(argv[i]) == -1) {
+            char error[sizeof(UMOUNT_FAIL) - 2 + strlen(argv[i])];
+            sprintf(error, UMOUNT_FAIL, argv[i]);
+            out = realloc(out, strlen(out) + strlen(error) + 1);
+            strcat(out, error);
+            continue;
+        }
+
+        char success[sizeof(UMOUNT_SUCCESS) - 2 + strlen(argv[i])];
+        sprintf(success, UMOUNT_SUCCESS, argv[i]);
+        out = realloc(out, strlen(out) + strlen(success) + 1);
+        strcat(out, success);
+    }
+
+    return out;
 }
 
 char *nxsh_commit_dev(int argc, char **argv) {
+    char device[PATH_MAX];
+    device[0] = '\0';
+
     if (argc < 1) {
-        char *drive = nxsh_cwd();
-        strtok(drive, ":/");
-        if (R_FAILED(fsdevCommitDevice(drive)))
-            return error("Committing failed\r\n");
-    } else if (strcmp(argv[0], "--help") == 0) {
+        getcwd(device, PATH_MAX);
+        strtok(device, ":/");
+    } else {
+        strcpy(device, argv[0]);
+    }
+
+    if (strcmp(device, "--help") == 0) {
         return error("Usage: commit-dev [device]\r\n");
     } else {
-        if(R_FAILED(fsdevCommitDevice(argv[0])))
-            return error("Committing failed\r\n");
+        if(R_FAILED(fsdevCommitDevice(device))) {
+            char *error = malloc(sizeof(COMMIT_FAIL) - 2 + strlen(device));
+            sprintf(error, COMMIT_FAIL, device);
+            return error;
+        }
     }
 
     return NULL;
