@@ -139,7 +139,6 @@ dist:	all
 	@mkdir -p $(TITLE_ID)/flags
 	@cp $(TARGET).nsp $(TITLE_ID)/exefs.nsp
 	@touch $(TITLE_ID)/flags/boot2.flag
-	@touch $(TITLE_ID)/boot2.flag
 	@zip -r $(TITLE_ID) $(TITLE_ID)
 	@mkdir -p release
 	@mv $(TITLE_ID).zip release
