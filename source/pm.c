@@ -19,11 +19,6 @@ char *nxsh_pm(int argc, char **argv) {
     
     if (strcmp(argv[0], "tid2pid") == 0) {
         if (argc >= 2) {
-            #ifdef __SYS__
-            free(out);
-            return error("This command doesn't work when running as a sysmodule\r\n");
-            #endif
-
             pmdmntInitialize();
             
             u64 pid;

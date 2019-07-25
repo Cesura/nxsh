@@ -23,6 +23,16 @@ void __appInit(void)
     rc = smInitialize();
     if (R_FAILED(rc))
         fatalSimple(rc);
+
+    rc = setsysInitialize();
+    if (R_SUCCEEDED(rc)) {
+        SetSysFirmwareVersion fw;
+        rc = setsysGetFirmwareVersion(&fw);
+        if (R_SUCCEEDED(rc))
+            hosversionSet(MAKEHOSVERSION(fw.major, fw.minor, fw.micro));
+        setsysExit();
+    }
+    
     rc = fsInitialize();
     if (R_FAILED(rc))
         fatalSimple(rc);

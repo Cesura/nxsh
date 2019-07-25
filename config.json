@@ -1,8 +1,8 @@
 {
     "name": "nxsh",
-    "title_id": "0x43000000000000ff",
-    "title_id_range_min": "0x43000000000000ff",
-    "title_id_range_max": "0x43000000000000ff",
+    "title_id": "0x43000000000000FF",
+    "title_id_range_min": "0x43000000000000FF",
+    "title_id_range_max": "0x43000000000000FF",
     "main_thread_stack_size": "0x24000",
     "main_thread_priority": 49,
     "default_cpu_id": 3,

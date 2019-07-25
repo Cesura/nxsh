@@ -23,7 +23,7 @@ SOURCES		:=	source
 DATA		:=	data
 INCLUDES	:=	include
 EXEFS_SRC	:=	exefs_src
-TITLE_ID	:=	43000000000000ff
+TITLE_ID	:=	43000000000000FF
 
 #---------------------------------------------------------------------------------
 # options for code generation
