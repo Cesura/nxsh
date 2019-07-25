@@ -28,47 +28,6 @@
 
 #define COMMIT_FAIL "Commiting \"%s\" failed\r\n"
 
-Result fsOpenGameCardFileSystem(FsFileSystem *out, FsGameCardHandle handle, u32 partition) {
-    IpcCommand c;
-    ipcInitialize(&c);
-
-    struct {
-        u64 magic;
-        u64 cmd_id;
-        u32 handle;
-        u32 partition;
-    } *raw;
-
-    raw = serviceIpcPrepareHeader(fsGetServiceSession(), &c, sizeof(*raw));
-
-    raw->magic = SFCI_MAGIC;
-    raw->cmd_id = 31;
-    raw->handle = handle.value;
-    raw->partition = partition;
-
-    Result rc = serviceIpcDispatch(fsGetServiceSession());
-
-    if (R_SUCCEEDED(rc)) {
-        IpcParsedCommand r;
-        struct {
-            u64 magic;
-            u64 result;
-        } *resp;
-
-        serviceIpcParse(fsGetServiceSession(), &r, sizeof(*resp));
-
-        resp = r.Raw;
-
-        rc = resp->result;
-
-        if (R_SUCCEEDED(rc)) {
-            serviceCreateSubservice(&out->s, fsGetServiceSession(), &r, 0);
-        }
-    }
-
-    return rc;
-}
-
 char *nxsh_mount(int argc, char **argv) {
     if (argc < 1)
         return error(MOUNT_USAGE);
@@ -199,7 +158,7 @@ char *nxsh_mount(int argc, char **argv) {
         if (R_FAILED(fsDeviceOperatorGetGameCardHandle(&op, &gc_handle)))
             return error("Getting gamecard handle failed\r\n");
 
-        if (R_FAILED(fsOpenGameCardFileSystem(&dev, gc_handle, atoi(argv[1]))))
+        if (R_FAILED(fsOpenGameCardFileSystem(&dev, &gc_handle, atoi(argv[1]))))
             return error("Opening filesytem failed\r\n");
 
         if (fsdevMountDevice(argv[2], dev) == -1)
@@ -223,12 +182,6 @@ char *nxsh_umount(int argc, char **argv) {
     out[0] = '\0';
 
     for (int i=0; i<argc; i++) {
-        if (R_FAILED(fsdevCommitDevice(argv[i]))) {
-            char error[sizeof(COMMIT_FAIL) - 2 + strlen(argv[i])];
-            sprintf(error, COMMIT_FAIL, argv[i]);
-            out = realloc(out, strlen(out) + strlen(error) + 1);
-            strcat(out, error);
-        }
 
         if (fsdevUnmountDevice(argv[i]) == -1) {
             char error[sizeof(UMOUNT_FAIL) - 2 + strlen(argv[i])];
