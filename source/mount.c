@@ -14,7 +14,8 @@
                     "\t--system-save\tMount system save\r\n" \
                     "\t--pfs0\tMount PFS0\r\n" \
                     "\t--sd-card\tMount SD card\r\n" \
-                    "\t--gamecard\tMount gamecard\r\n"
+                    "\t--gamecard\tMount gamecard\r\n" \
+                    "\t--romfs\tMount romfs\r\n"
 
 #define MOUNT_BIS_SUCCESS "Mounted partition %s to \"%s\" successfully\r\n"
 #define MOUNT_SYS_SUCCESS "Mounted system save %s to \"%s\" successfully\r\n"
@@ -22,6 +23,7 @@
 #define MOUNT_PFS0_SUCCESS "Mounted PFS0 %s to \"%s\" successfully\r\n"
 #define MOUNT_SD_SUCCESS "Mounted SD card to \"%s\" successfully\r\n"
 #define MOUNT_GC_SUCCESS "Mounted gamecard partiton %s to \"%s\" successfully\r\n"
+#define MOUNT_ROM_SUCCESS "Mounted romfs from %s to \"%s\" successfully\r\n"
 
 #define UMOUNT_SUCCESS "Unmounted \"%s\" successfully\r\n"
 #define UMOUNT_FAIL "Unmounting \"%s\" failed\r\n"
@@ -167,6 +169,74 @@ char *nxsh_mount(int argc, char **argv) {
         success = malloc(sizeof(char) * (sizeof(MOUNT_GC_SUCCESS) - 4 + strlen(argv[1]) + strlen(argv[2])));
         success[0] = '\0';
         sprintf(success, MOUNT_GC_SUCCESS, argv[1], argv[2]);
+    } else if (strcmp(argv[0], "--romfs") == 0) {
+        if (argc < 3)
+            return error("Usage: mount --romfs [options] [file] [offset] <device>\r\n" \
+                         "Options:\r\n\t--curr-proc\tMounts the romfs of the current process\r\n");
+
+        if (strcmp(argv[1], "--curr-proc") == 0) {
+            Result rc = romfsMountFromCurrentProcess(argv[2]);
+            if (R_FAILED(rc))
+                return error("Mounting failed\r\n");
+
+            success = malloc(sizeof(MOUNT_ROM_SUCCESS) - 5 + sizeof("current process") + strlen(argv[2]));
+            success[0] = '\0';
+            sprintf(success, MOUNT_ROM_SUCCESS, "current process", argv[2]);
+        } else {
+            u64 offset = 0;
+            char *file, *device;
+
+            if (argc < 4) {
+                FILE *fp = fopen(argv[1], "rb");
+
+                NroHeader nro_header;
+
+                if (fseek(fp, sizeof(NroStart), SEEK_SET) != 0)
+                    goto not_nro;
+                if (fread(&nro_header, sizeof(nro_header), 1, fp) != 1)
+                    goto not_nro;
+
+                if (nro_header.magic != NROHEADER_MAGIC)
+                    goto not_nro;
+
+                NroAssetHeader asset_header;
+
+                if (fseek(fp, nro_header.size, SEEK_SET) != 0)
+                    goto not_nro;
+                if (fread(&asset_header, sizeof(asset_header), 1, fp) != 1)
+                    goto not_nro;
+
+                if (asset_header.magic != NROASSETHEADER_MAGIC)
+                    goto not_nro;
+
+                if (asset_header.romfs.offset == 0 || asset_header.romfs.size == 0)
+                    goto not_nro;
+
+                offset = nro_header.size + asset_header.romfs.offset;
+
+not_nro:
+                fclose(fp);
+
+                Result rc = romfsMountFromFsdev(argv[1], offset, argv[2]);
+                if (R_FAILED(rc))
+                    return error("Mounting failed\r\n");
+
+                file = argv[1];
+                device = argv[2];
+            } else {
+                offset = strtoul(argv[2], NULL, 0);
+                Result rc = romfsMountFromFsdev(argv[1], offset, argv[3]);
+                if (R_FAILED(rc))
+                    return error("Mounting failed\r\n");
+
+                file = argv[1];
+                device = argv[3];
+            }
+
+            success = malloc(sizeof(MOUNT_ROM_SUCCESS) - 4 + strlen(file) + strlen(device));
+            success[0] = '\0';
+            sprintf(success, MOUNT_ROM_SUCCESS, file, device);
+        }
     } else {
         return error(MOUNT_USAGE);
     }
@@ -176,12 +246,32 @@ char *nxsh_mount(int argc, char **argv) {
 
 char *nxsh_umount(int argc, char **argv) {
     if (argc < 1)
-        return error("Usage: umount <device>\r\n");
+        return error("Usage: umount [options...] <device...>\r\n" \
+                     "\t--romfs\tMarks the following device as a romfs\r\n");
 
     char *out = malloc(1);
     out[0] = '\0';
 
     for (int i=0; i<argc; i++) {
+        if (strcmp(argv[i], "--romfs") == 0 && argc >= i + 2) {
+            i++;
+            Result rc = romfsUnmount(argv[i]);
+
+            if (R_FAILED(rc)) {
+                char error[sizeof(UMOUNT_FAIL) - 2 + strlen(argv[i])];
+                sprintf(error, UMOUNT_FAIL, argv[i]);
+                out = realloc(out, strlen(out) + strlen(error) + 1);
+                strcat(out, error);
+                continue;
+            }
+
+            char success[sizeof(UMOUNT_SUCCESS) - 2 + strlen(argv[i])];
+            sprintf(success, UMOUNT_SUCCESS, argv[i]);
+            out = realloc(out, strlen(out) + strlen(success) + 1);
+            strcat(out, success);
+
+            continue;
+        }
 
         if (fsdevUnmountDevice(argv[i]) == -1) {
             char error[sizeof(UMOUNT_FAIL) - 2 + strlen(argv[i])];
