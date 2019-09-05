@@ -246,34 +246,13 @@ not_nro:
 
 char *nxsh_umount(int argc, char **argv) {
     if (argc < 1)
-        return error("Usage: umount [options...] <device...>\r\n" \
-                     "\t--romfs\tMarks the following device as a romfs\r\n");
+        return error("Usage: umount [options...] <device...>\r\n");
 
     char *out = malloc(1);
     out[0] = '\0';
 
     for (int i=0; i<argc; i++) {
-        if (strcmp(argv[i], "--romfs") == 0 && argc >= i + 2) {
-            i++;
-            Result rc = romfsUnmount(argv[i]);
-
-            if (R_FAILED(rc)) {
-                char error[sizeof(UMOUNT_FAIL) - 2 + strlen(argv[i])];
-                sprintf(error, UMOUNT_FAIL, argv[i]);
-                out = realloc(out, strlen(out) + strlen(error) + 1);
-                strcat(out, error);
-                continue;
-            }
-
-            char success[sizeof(UMOUNT_SUCCESS) - 2 + strlen(argv[i])];
-            sprintf(success, UMOUNT_SUCCESS, argv[i]);
-            out = realloc(out, strlen(out) + strlen(success) + 1);
-            strcat(out, success);
-
-            continue;
-        }
-
-        if (fsdevUnmountDevice(argv[i]) == -1) {
+        if (fsdevUnmountDevice(argv[i]) == -1 && R_FAILED(romfsUnmount(argv[i]))) {
             char error[sizeof(UMOUNT_FAIL) - 2 + strlen(argv[i])];
             sprintf(error, UMOUNT_FAIL, argv[i]);
             out = realloc(out, strlen(out) + strlen(error) + 1);
