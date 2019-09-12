@@ -183,8 +183,11 @@ char *nxsh_mount(int argc, char **argv) {
             success[0] = '\0';
             sprintf(success, MOUNT_ROM_SUCCESS, "current process", argv[2]);
         } else {
+            if (!is_file(argv[1]))
+                return error("File doesn't exist\r\n");
+
             u64 offset = 0;
-            char *file, *device;
+            char *device;
 
             if (argc < 4) {
                 FILE *fp = fopen(argv[1], "rb");
@@ -217,25 +220,19 @@ char *nxsh_mount(int argc, char **argv) {
 not_nro:
                 fclose(fp);
 
-                Result rc = romfsMountFromFsdev(argv[1], offset, argv[2]);
-                if (R_FAILED(rc))
-                    return error("Mounting failed\r\n");
-
-                file = argv[1];
                 device = argv[2];
             } else {
                 offset = strtoul(argv[2], NULL, 0);
-                Result rc = romfsMountFromFsdev(argv[1], offset, argv[3]);
-                if (R_FAILED(rc))
-                    return error("Mounting failed\r\n");
-
-                file = argv[1];
                 device = argv[3];
             }
 
-            success = malloc(sizeof(MOUNT_ROM_SUCCESS) - 4 + strlen(file) + strlen(device));
+            Result rc = romfsMountFromFsdev(argv[1], offset, device);
+            if (R_FAILED(rc))
+                return error("Mounting failed\r\n");
+
+            success = malloc(sizeof(MOUNT_ROM_SUCCESS) - 4 + strlen(argv[1]) + strlen(device));
             success[0] = '\0';
-            sprintf(success, MOUNT_ROM_SUCCESS, file, device);
+            sprintf(success, MOUNT_ROM_SUCCESS, argv[1], device);
         }
     } else {
         return error(MOUNT_USAGE);
