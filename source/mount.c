@@ -53,8 +53,8 @@ char *nxsh_mount(int argc, char **argv) {
     } else if (strcmp(argv[0], "--system-save") == 0) {
         if (argc < 3)
             return error("Usage: mount --system-save <save id> <device>\r\n");
-
-        if (R_FAILED(fsMount_SystemSaveData(&dev, strtoul(argv[1], NULL, 16))))
+        AccountUid acc;
+        if (R_FAILED(fsOpen_SystemSaveData(&dev, FsSaveDataSpaceId_NandSystem, strtoul(argv[1], NULL, 16), acc)))
             return error("Mounting save data failed\r\n");
 
         if (fsdevMountDevice(argv[2], dev) == -1)
@@ -71,7 +71,7 @@ char *nxsh_mount(int argc, char **argv) {
             argv[1][i] = tolower(argv[1][i]);
         }
 
-        u128 user_id = 0;
+        AccountUid user_id;
         char id[33];
         memset(id, '0', sizeof(id));
         id[32] = '\0';
@@ -80,7 +80,7 @@ char *nxsh_mount(int argc, char **argv) {
             sscanf(id + i * 2, "%02hhx", (u8 *) &user_id + (15 - i));
         }
 
-        Result rc = fsMount_SaveData(&dev, strtoul(argv[2], NULL, 16), user_id);
+        Result rc = fsOpen_SaveData(&dev, strtoul(argv[2], NULL, 16), user_id);
         if (R_FAILED(rc))
             return error("Mounting save data failed\r\n");
 
@@ -126,7 +126,7 @@ char *nxsh_mount(int argc, char **argv) {
         success[0] = '\0';
         sprintf(success, MOUNT_PFS0_SUCCESS, argv[1], argv[2]);
     } else if (strcmp(argv[0], "--sd-card") == 0) {
-        if (R_FAILED(fsMountSdcard(&dev)))
+        if (R_FAILED(fsOpenSdCardFileSystem(&dev)))
             return error("Mounting SD card failed\r\n");
 
         char *device;

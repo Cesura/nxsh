@@ -21,9 +21,9 @@ char *nxsh_acc(int argc, char **argv) {
         s32 num_accounts;
         accountGetUserCount(&num_accounts);
 
-        u128 account_ids[num_accounts];
-        size_t total;
-        accountListAllUsers(account_ids, U64_MAX, &total);
+        AccountUid account_ids[num_accounts];
+        s32 total;
+        accountListAllUsers(account_ids, INT32_MAX, &total);
 
         out = malloc(num_accounts * (sizeof(ACC_ENTRY) + 60)); // Enough room for max length u128 in base 16 (32) and max length username (32)
         out[0] = '\0';
@@ -36,8 +36,8 @@ char *nxsh_acc(int argc, char **argv) {
             accountProfileGet(&profile, NULL, &profile_base);
 
             char entry[sizeof(ACC_ENTRY) + 60];
-            char *id = format_u128_hex(account_ids[i]);
-            sprintf(entry, ACC_ENTRY, id, profile_base.username);
+            char *id = format_u128_hex(*(u128*)&account_ids[i]);
+            sprintf(entry, ACC_ENTRY, id, profile_base.nickname);
             strcat(out, entry);
             free(id);
         }
@@ -52,9 +52,9 @@ char *nxsh_acc(int argc, char **argv) {
         s32 num_accounts;
         accountGetUserCount(&num_accounts);
 
-        u128 account_ids[num_accounts];
-        size_t total;
-        accountListAllUsers(account_ids, U64_MAX, &total);
+        AccountUid account_ids[num_accounts];
+        s32 total;
+        accountListAllUsers(account_ids, INT32_MAX, &total);
 
         int i;
         for (i=0; i<num_accounts; i++) {
@@ -64,12 +64,12 @@ char *nxsh_acc(int argc, char **argv) {
             AccountProfileBase profile_base;
             accountProfileGet(&profile, NULL, &profile_base);
 
-            if (strcmp(profile_base.username, argv[1]) == 0) {
+            if (strcmp(profile_base.nickname, argv[1]) == 0) {
                 out = malloc(sizeof(ACC_ENTRY) + 60); // Enough room for max length u128 in base 16 (32) and max length username (32)
                 out[0] = '\0';
 
-                char *id = format_u128_hex(account_ids[i]);
-                sprintf(out, ACC_ENTRY, id, profile_base.username);
+                char *id = format_u128_hex(*(u128*)&account_ids[i]);
+                sprintf(out, ACC_ENTRY, id, profile_base.nickname);
                 free(id);
                 break;
             }
