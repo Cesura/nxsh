@@ -50,7 +50,7 @@ int setupServerSocket(int *lissock) {
 }
 
 int main(int argc, char **argv) {
-    nifmInitialize();
+    nifmInitialize(NifmServiceType_Admin);
     #ifndef __SYS__
     socketInitializeDefault(); // The sysmodule does this in __appInit(), otherwise it gets glitchy
     consoleInit(NULL); // If the sysmodule tries to do this it crashes

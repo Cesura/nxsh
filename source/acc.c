@@ -16,7 +16,7 @@ char *nxsh_acc(int argc, char **argv) {
     char *out = NULL;
 
     if (strcmp(argv[0], "list") == 0) {
-        accountInitialize();
+        accountInitialize(AccountServiceType_Administrator);
 
         s32 num_accounts;
         accountGetUserCount(&num_accounts);
@@ -36,7 +36,7 @@ char *nxsh_acc(int argc, char **argv) {
             accountProfileGet(&profile, NULL, &profile_base);
 
             char entry[sizeof(ACC_ENTRY) + 60];
-            char *id = format_u128_hex(*(u128*)&account_ids[i]);
+            char *id = format_acc_uid_hex(account_ids[i]);
             sprintf(entry, ACC_ENTRY, id, profile_base.nickname);
             strcat(out, entry);
             free(id);
@@ -47,7 +47,7 @@ char *nxsh_acc(int argc, char **argv) {
         if (argc < 2)
             return error("Usage: acc find <username>\r\n");
 
-        accountInitialize();
+        accountInitialize(AccountServiceType_Administrator);
 
         s32 num_accounts;
         accountGetUserCount(&num_accounts);
@@ -68,7 +68,7 @@ char *nxsh_acc(int argc, char **argv) {
                 out = malloc(sizeof(ACC_ENTRY) + 60); // Enough room for max length u128 in base 16 (32) and max length username (32)
                 out[0] = '\0';
 
-                char *id = format_u128_hex(*(u128*)&account_ids[i]);
+                char *id = format_acc_uid_hex(account_ids[i]);
                 sprintf(out, ACC_ENTRY, id, profile_base.nickname);
                 free(id);
                 break;

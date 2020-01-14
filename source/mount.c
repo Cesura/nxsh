@@ -54,7 +54,7 @@ char *nxsh_mount(int argc, char **argv) {
         if (argc < 3)
             return error("Usage: mount --system-save <save id> <device>\r\n");
         AccountUid acc;
-        if (R_FAILED(fsOpen_SystemSaveData(&dev, FsSaveDataSpaceId_NandSystem, strtoul(argv[1], NULL, 16), acc)))
+        if (R_FAILED(fsOpen_SystemSaveData(&dev, FsSaveDataSpaceId_System, strtoul(argv[1], NULL, 16), acc)))
             return error("Mounting save data failed\r\n");
 
         if (fsdevMountDevice(argv[2], dev) == -1)

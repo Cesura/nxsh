@@ -104,7 +104,7 @@ char *nxsh_pm(int argc, char **argv) {
             
             u64 pid;
             u64 tid = strtoul(argv[1], NULL, 16);
-            NcmProgramLocation progloc = { tid, FsStorageId_None, {0} };
+            NcmProgramLocation progloc = { tid, NcmStorageId_None, {0} };
             Result rc = pmshellLaunchProgram(flags, &progloc, &pid);
             if (R_FAILED(rc)) {
                 free(out);

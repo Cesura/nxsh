@@ -186,8 +186,8 @@ char *hash(void *input, size_t size, const char *type) {
     return hash_str;
 }
 
-char *format_u128_hex(u128 num) {
-    u8 *ptr = (u8 *) &num;
+char *format_acc_uid_hex(AccountUid uid) {
+    u8 *ptr = (u8 *) &uid;
 
     char *out = malloc(33);
     out[0] = '\0';
