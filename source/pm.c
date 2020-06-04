@@ -23,7 +23,7 @@ char *nxsh_pm(int argc, char **argv) {
             
             u64 pid;
             u64 tid = strtoul(argv[1], NULL, 16);
-            Result rc = pmdmntGetTitlePid(&pid, tid);
+            Result rc = pmdmntGetProcessId(&pid, tid);
             if (R_FAILED(rc)) {
                 free(out);
                 pmdmntExit();
@@ -43,7 +43,7 @@ char *nxsh_pm(int argc, char **argv) {
             u64 tid;
             u64 pid = strtoul(argv[1], NULL, 10);
             
-            Result rc = pminfoGetTitleId(&tid, pid);
+            Result rc = pminfoGetProgramId(&tid, pid);
             if (R_FAILED(rc)) {
                 sprintf(out, "ERROR: 0x%x\r\n", rc);
                 pminfoExit();
@@ -62,7 +62,7 @@ char *nxsh_pm(int argc, char **argv) {
                 pmshellInitialize();
                 
                 u64 pid = strtoul(argv[2], NULL, 10);
-                Result rc = pmshellTerminateProcessByProcessId(pid);
+                Result rc = pmshellTerminateProcess(pid);
                 if (R_FAILED(rc)) {
                     free(out);
                     pmshellExit();
@@ -74,7 +74,7 @@ char *nxsh_pm(int argc, char **argv) {
                 pmshellInitialize();
                 
                 u64 tid = strtoul(argv[2], NULL, 16);
-                Result rc = pmshellTerminateProcessByTitleId(tid);
+                Result rc = pmshellTerminateProgram(tid);
                 if (R_FAILED(rc)) {
                     free(out);
                     pmshellExit();
@@ -104,7 +104,8 @@ char *nxsh_pm(int argc, char **argv) {
             
             u64 pid;
             u64 tid = strtoul(argv[1], NULL, 16);
-            Result rc = pmshellLaunchProcess(flags, tid, FsStorageId_None, &pid);
+            NcmProgramLocation progloc = { tid, NcmStorageId_None, {0} };
+            Result rc = pmshellLaunchProgram(flags, &progloc, &pid);
             if (R_FAILED(rc)) {
                 free(out);
                 pmshellExit();

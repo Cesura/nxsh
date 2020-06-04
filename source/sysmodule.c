@@ -22,7 +22,7 @@ void __appInit(void)
     Result rc;
     rc = smInitialize();
     if (R_FAILED(rc))
-        fatalSimple(rc);
+        fatalThrow(rc);
 
     rc = setsysInitialize();
     if (R_SUCCEEDED(rc)) {
@@ -35,10 +35,10 @@ void __appInit(void)
     
     rc = fsInitialize();
     if (R_FAILED(rc))
-        fatalSimple(rc);
+        fatalThrow(rc);
     rc = fsdevMountSdmc();
     if (R_FAILED(rc))
-        fatalSimple(rc);
+        fatalThrow(rc);
 
     /* The NRO begins in a folder under sdmc:/,
     so for consistency make the sysmodule change
@@ -47,11 +47,11 @@ void __appInit(void)
 
     rc = timeInitialize();
     if (R_FAILED(rc))
-        fatalSimple(rc);
+        fatalThrow(rc);
     __libnx_init_time();
     rc = socketInitializeDefault();
     if (R_FAILED(rc))
-        fatalSimple(rc);
+        fatalThrow(rc);
 }
 
 void __appExit(void)

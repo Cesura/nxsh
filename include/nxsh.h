@@ -93,6 +93,6 @@ int exists(char *name);
 char *filename(char *fullpath);
 char *strip_prefix(char *inpath);
 char *hash(void *input, size_t size, const char *type);
-char *format_u128_hex(u128 num);
+char *format_acc_uid_hex(AccountUid uid);
 
 #endif
