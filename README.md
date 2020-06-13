@@ -41,7 +41,8 @@ I've included a Makefile for simplifying the build process, but you *will* need 
 
 ## Connecting
 
-Once started, the application will listen on port 23 for incoming connections. If the socket initializes correctly, the listen address will be displayed on your Switch's screen. Unfortunately, until multithreading is fully supported for Switch homebrew apps, the shell cannot accept more than 1 simultaneous connection.
+Once started, the application will listen on port 5050 for incoming connections. If the socket initializes correctly, the listen address will be 
+displayed on your Switch's screen. Unfortunately, until multithreading is fully supported for Switch homebrew apps, the shell cannot accept more than 1 simultaneous connection.
 
 ### Linux/BSD/Mac OS
 
