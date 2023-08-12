@@ -41,8 +41,11 @@ int setupServerSocket(int *lissock) {
         #ifdef __SYS__
         svcSleepThread(1e+9L);
         #else
-        printf("Failed to bind: error %d\n", errno);
-        break;
+	printf("Failed to bind on port %d\n", NXSH_PORT);
+        printf("Error %d: %s\n", errno, strerror(errno));
+        consoleUpdate(NULL);
+        usleep(8000000);
+        return -1;
         #endif
     }
     

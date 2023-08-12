@@ -39,7 +39,7 @@
 
 #define NXSH_VERSION "0.1.8 beta"
 
-#define NXSH_PORT 23
+#define NXSH_PORT 3005
 
 extern int NXSH_LOGGING_ENABLED;
 extern int NXSH_FD_LOCK;
